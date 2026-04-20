@@ -1,0 +1,9 @@
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+outputs/
+!outputs/figures/
+!outputs/tables/
+data/processed/
+data/field_master.xlsx
