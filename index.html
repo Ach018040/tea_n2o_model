@@ -3,642 +3,896 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>茶園 N2O 排放風險評估工具</title>
+<title>茶園 N2O 決策與研究估算工具</title>
 <style>
   * { box-sizing: border-box; }
+  :root {
+    --ink: #27251f;
+    --muted: #706d62;
+    --line: #ded8ca;
+    --paper: #fbfaf6;
+    --panel: #ffffff;
+    --field: #f1eee6;
+    --green: #7fb447;
+    --green-bg: #eaf4df;
+    --amber: #e59a24;
+    --amber-bg: #fff1d9;
+    --red: #d95e59;
+    --red-bg: #fde8e6;
+    --blue: #2e6fd8;
+    --leaf: #315b2d;
+  }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 1.5rem 1rem;
-    color: #2c2c2a;
-    background: #fafaf7;
-    line-height: 1.6;
-  }
-  .header {
-    text-align: center;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #e5e3db;
-  }
-  .header h1 {
-    font-size: 22px;
-    font-weight: 500;
-    margin: 0 0 6px;
-  }
-  .header p {
-    font-size: 13px;
-    color: #6b6a63;
     margin: 0;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at top left, rgba(127, 180, 71, 0.18), transparent 34rem),
+      linear-gradient(180deg, #fffefb 0%, var(--paper) 44%, #f4f0e7 100%);
+    font-family: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.65;
+  }
+  .shell {
+    width: min(1080px, calc(100% - 32px));
+    margin: 0 auto;
+  }
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(18px);
+    background: rgba(251, 250, 246, 0.88);
+    border-bottom: 1px solid rgba(222, 216, 202, 0.8);
+  }
+  .nav {
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+  }
+  .brand {
+    font-weight: 750;
+    letter-spacing: 0.02em;
+  }
+  .brand span {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+  .nav-links {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .nav-btn,
+  button,
+  select,
+  input,
+  textarea {
+    font: inherit;
+  }
+  .nav-btn {
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    padding: 9px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .nav-btn.active,
+  .nav-btn:hover {
+    color: var(--ink);
+    background: var(--field);
+  }
+  main {
+    padding: 34px 0 56px;
+  }
+  .page {
+    display: none;
+    animation: pageIn 0.28s ease both;
+  }
+  .page.active {
+    display: block;
+  }
+  @keyframes pageIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero {
+    padding: 34px 0 22px;
+  }
+  .eyebrow {
+    color: var(--leaf);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  p {
+    margin-top: 0;
+  }
+  h1 {
+    max-width: 760px;
+    font-size: clamp(38px, 7vw, 76px);
+    line-height: 0.96;
+    letter-spacing: -0.06em;
+    margin: 12px 0 18px;
+  }
+  h2 {
+    font-size: clamp(28px, 4vw, 44px);
+    line-height: 1.08;
+    letter-spacing: -0.04em;
+    margin-bottom: 14px;
+  }
+  h3 {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+  .lead {
+    max-width: 680px;
+    color: var(--muted);
+    font-size: 18px;
+  }
+  .mode-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 34px;
+  }
+  .mode-card {
+    min-height: 260px;
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.78);
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+  .mode-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(49, 91, 45, 0.45);
+    box-shadow: 0 18px 45px rgba(39, 37, 31, 0.08);
+  }
+  .mode-card strong {
+    display: block;
+    font-size: clamp(28px, 4vw, 46px);
+    line-height: 1;
+    letter-spacing: -0.05em;
+    margin: 10px 0;
+  }
+  .mode-card p {
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+  .mode-tag {
+    color: var(--leaf);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .mode-action {
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .panel {
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 22px;
+  }
+  .section-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 18px;
+    align-items: start;
+  }
+  .input-row {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  label,
+  .label {
+    color: var(--muted);
+    font-size: 14px;
+  }
+  select,
+  input,
+  textarea {
+    width: 100%;
+    border: 1px solid #d4ccba;
+    border-radius: 10px;
+    background: #fff;
+    color: var(--ink);
+    padding: 9px 11px;
+  }
+  select:focus,
+  input:focus,
+  textarea:focus {
+    outline: 2px solid rgba(46, 111, 216, 0.28);
+    border-color: var(--blue);
+  }
+  .unit-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .hint {
+    color: var(--muted);
+    font-size: 13px;
+    margin: 8px 0 0;
+  }
+  .btn-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-top: 14px;
+  }
+  .btn {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fff;
+    padding: 9px 14px;
+    cursor: pointer;
+  }
+  .btn.primary {
+    color: #fff;
+    background: var(--blue);
+    border-color: var(--blue);
+  }
+  .result-card {
+    border-radius: 22px;
+    padding: 22px;
+    border: 1px solid transparent;
+  }
+  .result-card.low { background: var(--green-bg); border-color: var(--green); }
+  .result-card.medium { background: var(--amber-bg); border-color: var(--amber); }
+  .result-card.high { background: var(--red-bg); border-color: var(--red); }
+  .traffic {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    margin-bottom: 8px;
+  }
+  .light {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 0 7px rgba(127, 180, 71, 0.15);
+  }
+  .result-card.medium .light { background: var(--amber); box-shadow: 0 0 0 7px rgba(229, 154, 36, 0.16); }
+  .result-card.high .light { background: var(--red); box-shadow: 0 0 0 7px rgba(217, 94, 89, 0.16); }
+  .result-block {
+    margin-top: 16px;
+  }
+  .result-block b {
+    display: block;
+    margin-bottom: 4px;
+  }
+  .research-shell {
+    display: none;
+  }
+  .research-shell.active {
+    display: block;
   }
   .model-switch {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 1.5rem;
-    padding: 12px 16px;
-    background: #f1efe8;
-    border-radius: 8px;
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    background: var(--field);
+    border-radius: 14px;
   }
   .model-switch label {
-    font-size: 13px;
-    color: #6b6a63;
-  }
-  .model-switch select {
-    flex: 1;
-    max-width: 280px;
-    padding: 6px 10px;
-    border: 1px solid #d3d1c7;
-    border-radius: 6px;
-    background: white;
-    font-size: 14px;
-    font-family: inherit;
+    white-space: nowrap;
   }
   .tabs {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 1.5rem;
-    background: #f1efe8;
-    padding: 4px;
-    border-radius: 8px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    margin-bottom: 18px;
+    background: var(--field);
+    padding: 5px;
+    border-radius: 14px;
   }
   .tab {
-    flex: 1;
-    padding: 10px 12px;
     border: none;
     background: transparent;
-    color: #6b6a63;
-    font-size: 14px;
+    color: var(--muted);
+    border-radius: 10px;
+    padding: 11px 12px;
     cursor: pointer;
-    border-radius: 6px;
-    transition: all 0.15s;
-    font-family: inherit;
   }
   .tab.active {
-    background: white;
-    color: #2c2c2a;
-    font-weight: 500;
+    color: var(--ink);
+    background: #fff;
+    font-weight: 700;
   }
-  .tab:hover:not(.active) {
-    background: rgba(255,255,255,0.5);
+  .research-panel {
+    display: none;
   }
-  .panel { display: none; }
-  .panel.active { display: block; }
-  .section {
-    margin-bottom: 1.5rem;
+  .research-panel.active {
+    display: block;
   }
-  .section h3 {
-    font-size: 16px;
-    font-weight: 500;
-    margin: 0 0 0.75rem;
-  }
-  .input-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-  .input-row label {
-    flex: 0 0 120px;
-    font-size: 14px;
-    color: #6b6a63;
-  }
-  .input-row input,
-  .input-row select {
-    flex: 1;
-    max-width: 240px;
-    padding: 6px 10px;
-    border: 1px solid #d3d1c7;
-    border-radius: 6px;
-    font-size: 14px;
-    background: white;
-    font-family: inherit;
-  }
-  .input-row input:focus,
-  .input-row select:focus {
-    outline: 2px solid #378add;
-    outline-offset: -1px;
-    border-color: transparent;
-  }
-  .unit-text {
-    font-size: 13px;
-    color: #6b6a63;
-  }
-  .result {
-    padding: 20px;
-    border-radius: 12px;
-    border: 1px solid transparent;
-    margin-top: 1rem;
-  }
-  .result.low { background: #EAF3DE; border-color: #97C459; }
-  .result.medium { background: #FAEEDA; border-color: #EF9F27; }
-  .result.high { background: #FCEBEB; border-color: #F09595; }
-  .result-title {
-    font-size: 22px;
-    font-weight: 500;
-    margin: 0 0 8px;
-  }
-  .result.low .result-title { color: #27500A; }
-  .result.medium .result-title { color: #633806; }
-  .result.high .result-title { color: #791F1F; }
-  .result-message {
-    font-size: 14px;
-    line-height: 1.7;
-    margin: 0;
-  }
-  .result.low .result-message { color: #27500A; }
-  .result.medium .result-message { color: #633806; }
-  .result.high .result-message { color: #791F1F; }
-  .legend {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
-    margin-top: 1rem;
-    font-size: 12px;
-    color: #6b6a63;
-    flex-wrap: wrap;
-  }
-  .legend-item {
-    display: inline-flex;
-    align-items: center;
-  }
-  .legend-dot {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    margin-right: 6px;
-  }
-  .rain-grid {
+  .rain-grid,
+  .calendar,
+  .summary-grid {
     display: grid;
+    gap: 8px;
+  }
+  .rain-grid,
+  .calendar {
     grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
-    margin-top: 0.75rem;
   }
   .rain-cell {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 5px;
   }
   .rain-cell label {
-    font-size: 11px;
-    color: #6b6a63;
     text-align: center;
+    font-size: 11px;
   }
   .rain-cell input {
-    width: 100%;
-    padding: 6px 4px;
-    font-size: 13px;
     text-align: center;
-    border: 1px solid #d3d1c7;
-    border-radius: 6px;
-    font-family: inherit;
-  }
-  .reset-row {
-    display: flex;
-    gap: 8px;
-    margin-top: 0.75rem;
-  }
-  .reset-row button {
-    flex: 1;
-    font-size: 13px;
-    padding: 8px 10px;
-    border: 1px solid #d3d1c7;
-    border-radius: 6px;
-    background: white;
-    cursor: pointer;
-    font-family: inherit;
-  }
-  .calendar {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
+    padding: 7px 4px;
   }
   .day {
-    padding: 10px 6px;
-    border-radius: 10px;
-    text-align: center;
+    min-height: 78px;
+    border-radius: 14px;
     border: 1px solid transparent;
-    min-height: 82px;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    text-align: center;
     gap: 4px;
   }
-  .day.low { background: #EAF3DE; border-color: #97C459; }
-  .day.medium { background: #FAEEDA; border-color: #EF9F27; }
-  .day.high { background: #FCEBEB; border-color: #F09595; }
+  .day.low { background: var(--green-bg); border-color: var(--green); }
+  .day.medium { background: var(--amber-bg); border-color: var(--amber); }
+  .day.high { background: var(--red-bg); border-color: var(--red); }
   .day-label {
+    font-weight: 700;
     font-size: 13px;
-    font-weight: 500;
   }
   .day-rain {
+    color: var(--muted);
     font-size: 12px;
-    color: #6b6a63;
-  }
-  .suggestion,
-  .plan-result,
-  .attribution {
-    background: white;
-    border: 1px solid #e5e3db;
-    border-radius: 12px;
-    padding: 16px;
-  }
-  .emission-grid {
-    display: grid;
-    grid-template-columns: 1.35fr 0.9fr;
-    gap: 16px;
-    align-items: start;
-  }
-  .emission-card,
-  .emission-result,
-  .table-wrap {
-    background: white;
-    border: 1px solid #e5e3db;
-    border-radius: 12px;
-    padding: 16px;
-  }
-  .emission-card textarea {
-    width: 100%;
-    min-height: 220px;
-    padding: 10px 12px;
-    border: 1px solid #d3d1c7;
-    border-radius: 8px;
-    resize: vertical;
-    font-size: 13px;
-    line-height: 1.5;
-    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-    background: white;
-  }
-  .emission-card textarea:focus {
-    outline: 2px solid #378add;
-    outline-offset: -1px;
-    border-color: transparent;
-  }
-  .help-text {
-    font-size: 13px;
-    color: #6b6a63;
-    margin: 8px 0 0;
-  }
-  .action-row {
-    display: flex;
-    gap: 8px;
-    margin-top: 0.75rem;
-    flex-wrap: wrap;
-  }
-  .action-row button {
-    font-size: 13px;
-    padding: 8px 12px;
-    border: 1px solid #d3d1c7;
-    border-radius: 6px;
-    background: white;
-    cursor: pointer;
-    font-family: inherit;
-  }
-  .action-row button.primary {
-    background: #2d6cdf;
-    border-color: #2d6cdf;
-    color: white;
   }
   .summary-grid {
-    display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-top: 0.75rem;
   }
   .summary-box {
-    background: #f6f4ed;
-    border: 1px solid #e5e3db;
-    border-radius: 10px;
+    background: var(--field);
+    border: 1px solid var(--line);
+    border-radius: 14px;
     padding: 14px;
   }
   .summary-label {
+    color: var(--muted);
     font-size: 12px;
-    color: #6b6a63;
   }
   .summary-value {
     margin-top: 4px;
     font-size: 22px;
-    font-weight: 600;
-    color: #2c2c2a;
+    font-weight: 800;
+  }
+  .emission-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 16px;
   }
   .table-wrap {
-    margin-top: 1rem;
+    overflow-x: auto;
+    margin-top: 16px;
   }
-  .table-wrap h4,
-  .emission-result h4,
-  .emission-card h3 {
-    margin: 0 0 10px;
+  .quarter-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 12px;
   }
-  .emission-table {
+  .quarter-card {
+    background: var(--field);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px;
+  }
+  .quarter-card label {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .quarter-card input {
+    margin-top: 6px;
+  }
+  .quarter-total {
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: 800;
+  }
+  table {
     width: 100%;
     border-collapse: collapse;
     font-size: 13px;
   }
-  .emission-table th,
-  .emission-table td {
-    padding: 8px 10px;
-    border-bottom: 1px solid #ece8db;
+  th,
+  td {
     text-align: left;
-    vertical-align: top;
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--line);
   }
-  .emission-table th {
-    color: #6b6a63;
-    font-weight: 600;
+  th {
+    color: var(--muted);
+    font-weight: 700;
   }
-  .suggestion {
-    margin-top: 1rem;
-    line-height: 1.7;
+  .doc-layout {
+    display: grid;
+    gap: 16px;
   }
-  .plan-result h4,
-  .attribution h4 {
-    margin: 0 0 10px;
-    font-size: 15px;
+  .doc-layout details,
+  .doc-block {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 18px;
   }
-  .attribution {
-    margin-top: 2rem;
-    font-size: 14px;
-    color: #4b4a44;
-  }
-  .attribution summary {
+  summary {
     cursor: pointer;
-    font-weight: 500;
+    font-weight: 800;
   }
-  .version-note {
+  .pill-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
     margin-top: 12px;
-    font-size: 12px;
-    color: #6b6a63;
   }
-  @media (max-width: 640px) {
-    body {
-      padding: 1rem 0.875rem 2rem;
-    }
-    .model-switch,
-    .input-row,
-    .reset-row,
-    .action-row {
+  .pill {
+    border-radius: 999px;
+    background: var(--field);
+    padding: 6px 10px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .footer-note {
+    margin-top: 28px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  @media (max-width: 760px) {
+    .nav {
+      align-items: flex-start;
       flex-direction: column;
-      align-items: stretch;
+      padding: 12px 0;
     }
-    .input-row label,
-    .input-row input,
-    .input-row select,
-    .model-switch select {
-      max-width: none;
-      flex: 1 1 auto;
+    .nav-links {
+      justify-content: flex-start;
+    }
+    .mode-grid,
+    .section-grid,
+    .emission-grid,
+    .quarter-grid,
+    .summary-grid {
+      grid-template-columns: 1fr;
+    }
+    .tabs {
+      grid-template-columns: repeat(2, 1fr);
     }
     .rain-grid,
-    .calendar,
-    .summary-grid,
-    .emission-grid {
+    .calendar {
       grid-template-columns: repeat(2, 1fr);
+    }
+    .input-row {
+      grid-template-columns: 1fr;
+    }
+    h1 {
+      font-size: 44px;
     }
   }
 </style>
 </head>
 <body>
-<div class="header">
-  <h1>茶園 N2O 排放風險評估工具</h1>
-  <p>依降雨條件與施氮量評估施肥時點的相對排放風險</p>
-</div>
+<header class="site-header">
+  <div class="shell nav">
+    <div class="brand">茶園 N2O 工具<span>施肥決策與研究估算</span></div>
+    <nav class="nav-links" aria-label="主要導覽">
+      <button class="nav-btn active" data-page="home">首頁</button>
+      <button class="nav-btn" data-page="decision">施肥決策</button>
+      <button class="nav-btn" data-page="research">研究估算</button>
+      <button class="nav-btn" data-page="model">模型說明</button>
+      <button class="nav-btn" data-page="carbon">碳盤查定位</button>
+    </nav>
+  </div>
+</header>
 
-<div class="model-switch">
-  <label for="model-select">使用模型</label>
-  <select id="model-select">
-    <option value="simple" selected>簡化版（3 天雨量法，茶農適用）</option>
-    <option value="full">完整版（rain_weighted 學術版）</option>
-  </select>
-</div>
+<main class="shell">
+  <section class="page active" id="page-home">
+    <div class="hero">
+      <div class="eyebrow">Tea N2O Decision Support</div>
+      <h1>先選你的使用情境。</h1>
+      <p class="lead">茶農快速判斷這次能不能施肥；研究者保留完整模型、預報、規劃與排放估算功能。</p>
+    </div>
+    <div class="mode-grid">
+      <button class="mode-card" data-page-jump="decision">
+        <span class="mode-tag">給茶農</span>
+        <strong>施肥決策</strong>
+        <p>輸入肥料與三天雨量，直接看到紅綠燈、原因與建議做法。</p>
+        <span class="mode-action">進入決策模式</span>
+      </button>
+      <button class="mode-card" data-page-jump="research">
+        <span class="mode-tag">給研究者</span>
+        <strong>研究估算</strong>
+        <p>保留快速查詢、7 天預報、施肥規劃與排放計算器。</p>
+        <span class="mode-action">進入研究模式</span>
+      </button>
+    </div>
+  </section>
 
-<div class="tabs" role="tablist">
-  <button class="tab active" data-panel="quick">快速查詢</button>
-  <button class="tab" data-panel="week">7 天預報</button>
-  <button class="tab" data-panel="plan">施肥規劃</button>
-  <button class="tab" data-panel="emission">排放量計算</button>
-</div>
+  <section class="page" id="page-decision">
+    <div class="hero">
+      <div class="eyebrow">Decision Mode</div>
+      <h2>這次施肥，現在適合嗎？</h2>
+      <p class="lead">用最少欄位判斷風險。若你知道肥料產品與用量，系統會先換算成施氮量，再帶入判斷。</p>
+    </div>
+    <div class="section-grid">
+      <div class="panel">
+        <h3>肥料換算器</h3>
+        <div class="input-row">
+          <label for="fertilizer-product">肥料產品</label>
+          <select id="fertilizer-product">
+            <option value="20">台肥 1 號複合肥料（約 N 20%）</option>
+            <option value="16">台肥 5 號複合肥料（約 N 16%）</option>
+            <option value="21">硫酸銨（約 N 21%）</option>
+            <option value="46">尿素（約 N 46%）</option>
+            <option value="custom">自訂氮含量</option>
+          </select>
+        </div>
+        <div class="input-row" id="custom-n-row" style="display:none;">
+          <label for="custom-n-percent">自訂 N %</label>
+          <input type="number" id="custom-n-percent" min="0" max="100" step="0.1" value="20">
+        </div>
+        <div class="input-row">
+          <label for="fertilizer-amount">施用量</label>
+          <div class="unit-row">
+            <input type="number" id="fertilizer-amount" min="0" step="1" value="200">
+            <select id="fertilizer-unit">
+              <option value="kg_ha">kg/ha</option>
+              <option value="bag_01ha">包/0.1ha（每包 40kg）</option>
+            </select>
+          </div>
+        </div>
+        <p class="hint">換算施氮量：<b id="converted-n">40.0 kg N/ha</b></p>
 
-<div class="panel active" id="panel-quick">
-  <div class="section">
-    <h3>輸入資訊</h3>
-    <div class="input-row">
-      <label for="quick-n">施氮量</label>
-      <select id="quick-n">
-        <option value="100">低 (100 kg N/ha)</option>
-        <option value="200">中 (200 kg N/ha)</option>
-        <option value="400" selected>慣行 (400 kg N/ha)</option>
-        <option value="600">高 (600 kg N/ha)</option>
+        <h3 style="margin-top:24px;">天氣條件</h3>
+        <div class="input-row">
+          <label for="decision-n">施氮量</label>
+          <input type="number" id="decision-n" min="0" step="1" value="40">
+        </div>
+        <div class="input-row">
+          <label for="decision-rain">近 3 天雨量</label>
+          <input type="number" id="decision-rain" min="0" step="1" value="8">
+        </div>
+        <p class="hint">如果不使用肥料換算器，也可以直接修改施氮量。</p>
+      </div>
+
+      <div class="result-card low" id="decision-result">
+        <div class="traffic"><span class="light"></span><span id="decision-title">綠燈，可以施肥</span></div>
+        <p id="decision-summary">目前雨量條件偏低，施肥後形成高排放的機會較小。</p>
+        <div class="result-block">
+          <b>為什麼？</b>
+          <p id="decision-why">近 3 天雨量未達目前施氮量的風險門檻，土壤短時間過濕的機率較低。</p>
+        </div>
+        <div class="result-block">
+          <b>該怎麼做？</b>
+          <p id="decision-action">可依原定計畫施肥；若天氣預報轉為大雨，建議重新檢查。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" id="page-research">
+    <div class="hero">
+      <div class="eyebrow">Research Mode</div>
+      <h2>研究估算工作台</h2>
+      <p class="lead">保留完整參數、7 天時序、施肥規劃、事件型排放估算與季度彙整，適合研究、示範場域與管理報表。</p>
+    </div>
+
+    <div class="model-switch">
+      <label for="model-select">使用模型</label>
+      <select id="model-select">
+        <option value="simple" selected>簡化版（3 天雨量法）</option>
+        <option value="full">完整版（rain_weighted 學術版）</option>
       </select>
     </div>
-    <div class="input-row">
-      <label id="quick-rain-label" for="quick-rain-3day">3 天預估雨量</label>
-      <input type="number" id="quick-rain-3day" min="0" step="1" value="10" />
-      <span class="unit-text">mm</span>
+
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-panel="quick">快速查詢</button>
+      <button class="tab" data-panel="week">7 天預報</button>
+      <button class="tab" data-panel="plan">施肥規劃</button>
+      <button class="tab" data-panel="emission">排放計算器</button>
     </div>
-  </div>
-  <div class="result low" id="quick-result">
-    <p class="result-title" id="quick-result-title">低風險：可施肥</p>
-    <p class="result-message" id="quick-result-msg">輸入資訊後查看建議</p>
-  </div>
-  <p class="legend">
-    <span class="legend-item"><span class="legend-dot" style="background:#97C459;"></span>低風險：可施肥</span>
-    <span class="legend-item"><span class="legend-dot" style="background:#EF9F27;"></span>中風險：觀察</span>
-    <span class="legend-item"><span class="legend-dot" style="background:#F09595;"></span>高風險：延後</span>
-  </p>
-</div>
 
-<div class="panel" id="panel-week">
-  <div class="section">
-    <h3>輸入 7 天雨量預報</h3>
-    <div class="input-row">
-      <label for="week-n">施氮量</label>
-      <select id="week-n">
-        <option value="100">低 (100 kg N/ha)</option>
-        <option value="200">中 (200 kg N/ha)</option>
-        <option value="400" selected>慣行 (400 kg N/ha)</option>
-        <option value="600">高 (600 kg N/ha)</option>
-      </select>
+    <section class="research-panel active" id="panel-quick">
+      <div class="section-grid">
+        <div class="panel">
+          <h3>單點風險查詢</h3>
+          <div class="input-row">
+            <label for="quick-n">施氮量</label>
+            <select id="quick-n">
+              <option value="100">100 kg N/ha</option>
+              <option value="200">200 kg N/ha</option>
+              <option value="400" selected>400 kg N/ha</option>
+              <option value="600">600 kg N/ha</option>
+            </select>
+          </div>
+          <div class="input-row">
+            <label id="quick-rain-label" for="quick-rain-3day">3 天雨量</label>
+            <input type="number" id="quick-rain-3day" min="0" step="1" value="10">
+          </div>
+        </div>
+        <div class="result-card low" id="quick-result">
+          <div class="traffic"><span class="light"></span><span id="quick-result-title">低風險</span></div>
+          <p id="quick-result-msg">輸入資訊後查看建議。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="research-panel" id="panel-week">
+      <div class="panel">
+        <h3>7 天雨量預報</h3>
+        <div class="input-row">
+          <label for="week-n">施氮量</label>
+          <select id="week-n">
+            <option value="100">100 kg N/ha</option>
+            <option value="200">200 kg N/ha</option>
+            <option value="400" selected>400 kg N/ha</option>
+            <option value="600">600 kg N/ha</option>
+          </select>
+        </div>
+        <div class="rain-grid" id="week-rain-grid"></div>
+        <div class="btn-row">
+          <button class="btn" onclick="weekReset('dry')">全部乾</button>
+          <button class="btn" onclick="weekReset('light')">小雨</button>
+          <button class="btn" onclick="weekReset('heavy')">大雨</button>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:16px;">
+        <h3>每日風險</h3>
+        <div class="calendar" id="week-calendar"></div>
+        <p class="hint" id="week-suggestion"></p>
+      </div>
+    </section>
+
+    <section class="research-panel" id="panel-plan">
+      <div class="section-grid">
+        <div class="panel">
+          <h3>施肥規劃</h3>
+          <div class="input-row">
+            <label for="plan-day">預定施肥日</label>
+            <select id="plan-day">
+              <option value="0">第 1 天</option>
+              <option value="1">第 2 天</option>
+              <option value="2">第 3 天</option>
+              <option value="3" selected>第 4 天</option>
+              <option value="4">第 5 天</option>
+              <option value="5">第 6 天</option>
+              <option value="6">第 7 天</option>
+            </select>
+          </div>
+          <div class="input-row">
+            <label for="plan-n">施氮量</label>
+            <select id="plan-n">
+              <option value="100">100 kg N/ha</option>
+              <option value="200">200 kg N/ha</option>
+              <option value="400" selected>400 kg N/ha</option>
+              <option value="600">600 kg N/ha</option>
+            </select>
+          </div>
+          <p class="hint">使用「7 天預報」分頁輸入的雨量序列評估。</p>
+        </div>
+        <div class="panel">
+          <h3 id="plan-result-title">評估結果</h3>
+          <p id="plan-result-body">請先在 7 天預報分頁輸入雨量。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="research-panel" id="panel-emission">
+      <div class="emission-grid">
+        <div class="panel">
+          <h3>事件型排放估算</h3>
+          <p class="hint">先建立一個代表性施肥事件，再用下方季度彙整把事件轉成 Q1-Q4 排放估算。</p>
+          <div class="input-row">
+            <label for="emission-fertilizer">施氮量</label>
+            <select id="emission-fertilizer">
+              <option value="100">100 kg N/ha</option>
+              <option value="200">200 kg N/ha</option>
+              <option value="400" selected>400 kg N/ha</option>
+              <option value="600">600 kg N/ha</option>
+            </select>
+          </div>
+          <div class="input-row">
+            <label for="emission-temp">平均氣溫</label>
+            <input type="number" id="emission-temp" min="0" step="0.1" value="18">
+          </div>
+          <div class="input-row">
+            <label for="emission-humidity">平均濕度</label>
+            <input type="number" id="emission-humidity" min="0" max="100" step="1" value="82">
+          </div>
+          <div class="rain-grid" id="emission-rain-grid"></div>
+          <div class="btn-row">
+            <button class="btn primary" id="emission-calc-btn">預估排放量</button>
+            <button class="btn" id="emission-load-sample">範例</button>
+            <button class="btn" id="emission-load-dry">乾燥</button>
+            <button class="btn" id="emission-load-wet">多雨</button>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>輸出設定</h3>
+          <div class="input-row">
+            <label for="emission-output-unit">單位</label>
+            <select id="emission-output-unit">
+              <option value="kg_N2O_N_ha" selected>kg N2O-N ha^-1</option>
+              <option value="kg_N2O_ha">kg N2O ha^-1</option>
+            </select>
+          </div>
+          <div class="summary-grid">
+            <div class="summary-box">
+              <div class="summary-label">7 天累積</div>
+              <div class="summary-value" id="emission-main-value">-</div>
+            </div>
+            <div class="summary-box">
+              <div class="summary-label">日平均</div>
+              <div class="summary-value" id="emission-count-value">-</div>
+            </div>
+            <div class="summary-box">
+              <div class="summary-label">最高加權雨量</div>
+              <div class="summary-value" id="emission-span-value">-</div>
+            </div>
+          </div>
+          <p class="hint" id="emission-detail">輸入條件後即可估算。</p>
+        </div>
+      </div>
+      <div class="panel table-wrap">
+        <h3>每日預估明細</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>天數</th>
+              <th>雨量</th>
+              <th>加權雨量</th>
+              <th>預估 N2O-N</th>
+              <th>換算結果</th>
+            </tr>
+          </thead>
+          <tbody id="emission-table-body">
+            <tr><td colspan="5">尚未計算。</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="panel table-wrap">
+        <h3>季度排放估算</h3>
+        <p class="hint">以目前這組「代表性 7 天事件」為基礎，輸入各季度相似施肥事件數，產出每季度與年度輔助估算。正式盤查仍應保留原始施肥紀錄與方法說明。</p>
+        <div class="quarter-grid">
+          <div class="quarter-card">
+            <label for="quarter-q1">Q1 事件數</label>
+            <input type="number" id="quarter-q1" min="0" step="1" value="1">
+            <div class="quarter-total" id="quarter-q1-total">-</div>
+          </div>
+          <div class="quarter-card">
+            <label for="quarter-q2">Q2 事件數</label>
+            <input type="number" id="quarter-q2" min="0" step="1" value="1">
+            <div class="quarter-total" id="quarter-q2-total">-</div>
+          </div>
+          <div class="quarter-card">
+            <label for="quarter-q3">Q3 事件數</label>
+            <input type="number" id="quarter-q3" min="0" step="1" value="1">
+            <div class="quarter-total" id="quarter-q3-total">-</div>
+          </div>
+          <div class="quarter-card">
+            <label for="quarter-q4">Q4 事件數</label>
+            <input type="number" id="quarter-q4" min="0" step="1" value="1">
+            <div class="quarter-total" id="quarter-q4-total">-</div>
+          </div>
+        </div>
+        <div class="summary-grid" style="margin-top:14px;">
+          <div class="summary-box">
+            <div class="summary-label">年度合計</div>
+            <div class="summary-value" id="quarter-year-total">-</div>
+          </div>
+          <div class="summary-box">
+            <div class="summary-label">代表事件</div>
+            <div class="summary-value" id="quarter-event-total">-</div>
+          </div>
+          <div class="summary-box">
+            <div class="summary-label">輸出單位</div>
+            <div class="summary-value" id="quarter-unit-label">-</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <section class="page" id="page-model">
+    <div class="hero">
+      <div class="eyebrow">Model Notes</div>
+      <h2>模型說明</h2>
+      <p class="lead">此頁集中放置研究者需要的模型背景、參數來源、驗證結果與使用限制。</p>
     </div>
-    <div class="rain-grid" id="week-rain-grid"></div>
-    <div class="reset-row">
-      <button onclick="weekReset('dry')">全部乾</button>
-      <button onclick="weekReset('light')">小雨</button>
-      <button onclick="weekReset('heavy')">大雨</button>
+    <div class="doc-layout">
+      <details open>
+        <summary>模型與資料來源</summary>
+        <p><b>研究背景</b></p>
+        <p>本工具基於茶園土壤 N2O 排放之田間試驗與模型分析研究，結合 2025 年逐日氣象資料與五個施氮量處理（0、100、200、400、600 kg N/ha）之通量觀測建立。</p>
+        <p><b>模型設計</b></p>
+        <p>簡化版以 3 天總雨量作為茶農可直接判讀的指標；完整版採 8 天 rain_lag 加權降雨指標。排放估算使用 rain_weighted、fertilizer_N、temp_lag1、humidity_lag1 與交互作用項。</p>
+      </details>
+      <details>
+        <summary>驗證結果</summary>
+        <p>風險門檻以 Youden's J statistic 於觀測資料上求得，並以 bootstrap 估算信賴區間。分類表現以 by-date 10-fold cross-validation 評估：簡化版整體準確度 0.709、特異性 0.819、敏感度 0.379；完整版準確度 0.681、特異性 0.728、敏感度 0.540。</p>
+      </details>
+      <details>
+        <summary>使用限制</summary>
+        <p>本工具為決策支援用途，不取代田間實測。預測結果為相對風險或事件型估算，不應直接視為正式申報值。模型目前主要適用於台灣中低海拔茶園，移植至其他氣候區、土壤或作物系統需重新校準。</p>
+      </details>
+      <details>
+        <summary>文獻背景</summary>
+        <p>茶園為高 N2O 排放風險作物系統之一，施氮量與降雨交互作用是重要觸發機制。有機肥 C/N 比、土壤微生物活性與土壤含水狀態亦可能影響事件型排放。</p>
+      </details>
     </div>
-  </div>
-  <div class="section">
-    <h3>每日風險</h3>
-    <div class="calendar" id="week-calendar"></div>
-  </div>
-  <div class="suggestion" id="week-suggestion"></div>
-</div>
+  </section>
 
-<div class="panel" id="panel-plan">
-  <div class="section">
-    <h3>預定施肥計畫</h3>
-    <div class="input-row">
-      <label for="plan-day">預定施肥日</label>
-      <select id="plan-day">
-        <option value="0">第 1 天（今天）</option>
-        <option value="1">第 2 天</option>
-        <option value="2">第 3 天</option>
-        <option value="3" selected>第 4 天</option>
-        <option value="4">第 5 天</option>
-        <option value="5">第 6 天</option>
-        <option value="6">第 7 天</option>
-      </select>
+  <section class="page" id="page-carbon">
+    <div class="hero">
+      <div class="eyebrow">Carbon Inventory Positioning</div>
+      <h2>碳盤查定位</h2>
+      <p class="lead">本工具是盤查輔助與減量管理工具，不取代正式碳盤查方法或田間實測。</p>
     </div>
-    <div class="input-row">
-      <label for="plan-n">施氮量</label>
-      <select id="plan-n">
-        <option value="100">低 (100 kg N/ha)</option>
-        <option value="200">中 (200 kg N/ha)</option>
-        <option value="400" selected>慣行 (400 kg N/ha)</option>
-        <option value="600">高 (600 kg N/ha)</option>
-      </select>
-    </div>
-    <p style="font-size:13px;color:#6b6a63;margin:8px 0 12px;">使用「7 天預報」分頁輸入的雨量資料評估</p>
-  </div>
-  <div class="plan-result" id="plan-result">
-    <h4 id="plan-result-title">評估結果</h4>
-    <p id="plan-result-body">請先在「7 天預報」分頁輸入雨量</p>
-  </div>
-</div>
-
-<div class="panel" id="panel-emission">
-  <div class="emission-grid">
-    <div class="emission-card">
-      <h3>輸入施肥與天氣資訊</h3>
-      <div class="input-row">
-        <label for="emission-fertilizer">施肥量</label>
-        <select id="emission-fertilizer">
-          <option value="100">低 (100 kg N/ha)</option>
-          <option value="200">中 (200 kg N/ha)</option>
-          <option value="400" selected>慣行 (400 kg N/ha)</option>
-          <option value="600">高 (600 kg N/ha)</option>
-        </select>
+    <div class="doc-layout">
+      <div class="doc-block">
+        <h3>定位說明</h3>
+        <p>本工具定位為茶園農地土壤 N2O 排放之盤查輔助與管理決策工具，主要用於施肥事件資料紀錄、風險辨識、短期排放估算與減量管理分析。正式盤查仍應依標準方法進行，例如確認土壤氮投入來源，再依排放因子估算直接與間接 N2O 排放。</p>
       </div>
-      <div class="input-row">
-        <label for="emission-temp">近期平均氣溫</label>
-        <input type="number" id="emission-temp" min="0" step="0.1" value="18">
+      <div class="doc-block">
+        <h3>在碳盤查中的角色</h3>
+        <div class="pill-list">
+          <span class="pill">活動數據蒐集</span>
+          <span class="pill">高風險事件辨識</span>
+          <span class="pill">短期排放估算輔助</span>
+          <span class="pill">減量管理追蹤</span>
+        </div>
+        <p style="margin-top:14px;">適合用於場域內部溫室氣體管理、示範場域與減量計畫、區域化方法建立前期資料累積，以及季度或年度管理報表之輔助分析。</p>
       </div>
-      <div class="input-row">
-        <label for="emission-humidity">近期平均濕度</label>
-        <input type="number" id="emission-humidity" min="0" max="100" step="1" value="82">
+      <div class="doc-block">
+        <h3>不建議直接作為正式申報值</h3>
+        <p>本工具輸出屬於事件層級的輔助估算與決策支援，不取代正式盤查方法或田間實測。正式申報仍需符合方法一致性、可追溯性、可查核性與時間序列一致性等原則。</p>
       </div>
-      <p class="help-text">輸入施肥後未來 7 天雨量，系統會用 `rain + temp + humidity` 預估 7 天累積排放量。</p>
-      <div class="rain-grid" id="emission-rain-grid"></div>
-      <div class="action-row">
-        <button class="primary" id="emission-calc-btn">預估排放量</button>
-        <button id="emission-load-sample">載入範例</button>
-        <button id="emission-load-dry">乾燥情境</button>
-        <button id="emission-load-wet">多雨情境</button>
+      <div class="doc-block">
+        <h3>建議輸出成果</h3>
+        <p>可搭配正式盤查產出施肥事件紀錄表、高風險事件統計表、季度排放估算表、季度風險分析表、措施前後比較表與事件型排放估算輔助表。</p>
       </div>
     </div>
-    <div class="emission-card">
-      <h3>設定</h3>
-      <div class="input-row">
-        <label for="emission-output-unit">輸出單位</label>
-        <select id="emission-output-unit">
-          <option value="kg_N2O_N_ha" selected>kg N2O-N ha^-1</option>
-          <option value="kg_N2O_ha">kg N2O ha^-1</option>
-        </select>
-      </div>
-      <p class="help-text">這個分頁不再需要量測通量。系統會用施肥量、平均氣溫、平均濕度與 7 天雨量，先預估每日 N2O-N 排放率，再加總成 7 天累積排放量。</p>
-      <p class="help-text">預估模型採用 `rain_weighted + fertilizer_N + temp + humidity`，適合施肥前快速判讀。</p>
-    </div>
-  </div>
+  </section>
 
-  <div class="emission-result">
-    <h4>預估結果</h4>
-    <div class="summary-grid">
-      <div class="summary-box">
-        <div class="summary-label">7 天累積排放量</div>
-        <div class="summary-value" id="emission-main-value">尚未計算</div>
-      </div>
-      <div class="summary-box">
-        <div class="summary-label">日平均排放量</div>
-        <div class="summary-value" id="emission-count-value">-</div>
-      </div>
-      <div class="summary-box">
-        <div class="summary-label">最高加權雨量</div>
-        <div class="summary-value" id="emission-span-value">-</div>
-      </div>
-    </div>
-    <p class="help-text" id="emission-detail">輸入施肥量與天氣資料後即可預估。</p>
-  </div>
-
-  <div class="table-wrap">
-    <h4>每日預估明細</h4>
-    <table class="emission-table">
-      <thead>
-        <tr>
-          <th>天數</th>
-          <th>雨量</th>
-          <th>加權雨量</th>
-          <th>預估 N2O-N</th>
-          <th>換算結果</th>
-        </tr>
-      </thead>
-      <tbody id="emission-table-body">
-        <tr>
-          <td colspan="5">尚未計算。</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<div class="attribution">
-  <h4>關於本工具</h4>
-  <p>本工具為茶園氮肥施用之 N2O 排放風險評估系統，目的為協助茶農在施肥前評估降雨條件對氧化亞氮（N2O）排放的潛在影響，降低溫室氣體排放並提升氮肥利用效率。</p>
-
-  <details>
-    <summary>模型與資料來源</summary>
-
-    <p><b>研究背景</b></p>
-    <p>本工具基於茶園土壤 N2O 排放之田間試驗與模型分析研究，結合 2025 年逐日氣象資料（中央氣象署 82C160 茶改場測站）與五個施氮量處理（0、100、200、400、600 kg N/ha）之通量觀測建立。</p>
-
-    <p style="margin-top:10px;"><b>雙軌模型設計</b></p>
-    <p>• <b>簡化版（3 天雨量法）</b>：以過去 3 天總雨量加前 1 日雨量為核心指標，茶農可直接由天氣預報判讀，為推廣使用版本。</p>
-    <p>• <b>完整版（rain_weighted）</b>：採 8 天 rain_lag 加權降雨指標建構，為學術研究版本。權重來自觀測資料與 N2O 通量之相關性（lag 1 權重最高 0.30，lag 4 次之 0.23）。</p>
-
-    <p style="margin-top:10px;"><b>門檻設定</b></p>
-    <p>各施氮量之風險觸發門檻採 Youden's J statistic 於 2025 年觀測資料上求得，並以 1,000 次 bootstrap 重抽樣估算 95% 信賴區間。分類表現以 by-date 10-fold cross-validation 評估：簡化版整體準確度 0.709、特異性 0.819、敏感度 0.379；完整版準確度 0.681、特異性 0.728、敏感度 0.540。</p>
-
-    <p style="margin-top:10px;"><b>文獻背景</b></p>
-    <p>茶園為全球農地中 N2O 排放因子最高之作物系統（平均 EFd 2.31%，為 IPCC 預設 1% 的 2.3 倍；Wang et al. 2020 Environmental Research Letters）；施氮量與降雨交互作用為主要觸發機制，有機肥 C/N 比與土壤微生物活性扮演放大角色（Wu et al. 2025 Agronomy）。</p>
-
-    <p style="margin-top:10px;"><b>使用限制</b></p>
-    <p>本工具為決策支援用途，不取代田間實測。預測結果為相對風險分級，並非精確 N2O 排放量。實際施肥決策應結合當地土壤、茶品種、管理方式綜合判斷。模型適用範圍為台灣中低海拔茶園，移植至其他氣候區或作物系統需重新校準門檻。</p>
-  </details>
-
-  <details>
-    <summary>碳盤查定位說明</summary>
-
-    <p><b>工具定位</b></p>
-    <p>本工具定位為茶園農地土壤 N2O 排放之盤查輔助與管理決策工具，主要用於施肥事件資料紀錄、風險辨識、短期排放估算與減量管理分析。正式碳盤查仍應依採用之標準方法進行，例如依土壤氮投入量與排放因子估算直接與間接 N2O 排放。</p>
-
-    <p style="margin-top:10px;"><b>在碳盤查中的角色</b></p>
-    <p>• <b>活動數據蒐集</b>：協助紀錄施肥日期、施肥量、施氮量、地塊條件與氣象資訊。</p>
-    <p>• <b>高風險事件辨識</b>：依施氮量、降雨、氣溫與濕度判斷施肥事件之低、中、高風險。</p>
-    <p>• <b>短期排放估算</b>：提供施肥事件後 7 天累積排放量預估，作為時點、雨量條件與施肥強度之相對比較依據。</p>
-    <p>• <b>減量管理追蹤</b>：可用於比較延後施肥、分次施肥、降低施氮量或避開高雨量窗口等策略的管理成效。</p>
-
-    <p style="margin-top:10px;"><b>適用場景</b></p>
-    <p>本工具適合用於場域內部溫室氣體管理、示範場域與減量計畫、區域化方法建立前期資料累積，以及季度或年度管理報表之輔助分析。</p>
-
-    <p style="margin-top:10px;"><b>不建議直接作為正式申報值</b></p>
-    <p>本工具輸出屬於事件層級的輔助估算與決策支援，不取代正式盤查方法或田間實測。正式申報仍需符合方法一致性、可追溯性、可查核性與時間序列一致性等原則。</p>
-
-    <p style="margin-top:10px;"><b>建議輸出成果</b></p>
-    <p>可搭配正式盤查產出施肥事件紀錄表、高風險事件統計表、季度風險分析表、措施前後比較表與事件型排放估算輔助表。</p>
-  </details>
-
-  <p class="version-note">研究與開發：ChengAn（茶園 N2O 排放研究）｜資料期間：2025/1/1 – 2026/4/18｜版本 v1.1</p>
-</div>
+  <p class="footer-note">研究與開發：ChengAn（茶園 N2O 排放研究）｜資料期間：2025/1/1 - 2026/4/18｜版本 v2.0</p>
+</main>
 
 <script>
-(function(){
+(function() {
   var SIMPLE = {
     thresholds: [
       { N: 100, th: 12.7 },
@@ -646,9 +900,8 @@
       { N: 400, th: 8.1 },
       { N: 600, th: 12.7 }
     ],
-    rainVarLabel: '3 天總雨量'
+    rainVarLabel: "3 天總雨量"
   };
-
   var FULL = {
     thresholds: [
       { N: 100, th: 3.37 },
@@ -656,7 +909,7 @@
       { N: 400, th: 5.45 },
       { N: 600, th: 4.41 }
     ],
-    rainVarLabel: '加權雨量指標',
+    rainVarLabel: "加權雨量指標",
     weights: [0.1754, 0.3048, 0.1231, 0.0115, 0.2288, 0.1132, 0.0133, 0.0301]
   };
   var EMISSION_MODEL = {
@@ -668,12 +921,30 @@
     interaction: 6.761639424148373e-6
   };
 
-  var currentModel = 'simple';
+  var currentModel = "simple";
   var weekRains = [0, 0, 0, 0, 0, 0, 0];
   var emissionRains = [5, 8, 12, 6, 3, 0, 2];
+  var lastEventTotalN2ON = 0;
+
+  function showPage(name) {
+    document.querySelectorAll(".page").forEach(function(page) {
+      page.classList.toggle("active", page.id === "page-" + name);
+    });
+    document.querySelectorAll(".nav-btn").forEach(function(btn) {
+      btn.classList.toggle("active", btn.dataset.page === name);
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  document.querySelectorAll(".nav-btn").forEach(function(btn) {
+    btn.addEventListener("click", function() { showPage(btn.dataset.page); });
+  });
+  document.querySelectorAll("[data-page-jump]").forEach(function(btn) {
+    btn.addEventListener("click", function() { showPage(btn.dataset.pageJump); });
+  });
 
   function getThreshold(N, model) {
-    var conf = model === 'simple' ? SIMPLE : FULL;
+    var conf = model === "simple" ? SIMPLE : FULL;
     var pts = conf.thresholds;
     if (N <= pts[0].N) return pts[0].th;
     if (N >= pts[pts.length - 1].N) return pts[pts.length - 1].th;
@@ -688,15 +959,18 @@
 
   function classifyRisk(N, rainValue, model) {
     if (N <= 0) return 1;
-    if (isNaN(rainValue)) return null;
     var th = getThreshold(N, model);
     if (rainValue < th * 0.5) return 1;
     if (rainValue < th) return 2;
     return 3;
   }
 
+  function riskClassName(risk) {
+    return risk === 1 ? "low" : risk === 2 ? "medium" : "high";
+  }
+
   function computeRainValue(dayIndex, rainArray, model) {
-    if (model === 'simple') {
+    if (model === "simple") {
       var sum = 0;
       for (var i = 0; i <= 2; i++) {
         var idx = dayIndex - i;
@@ -704,212 +978,222 @@
       }
       return sum;
     }
-
-    var sum2 = 0;
+    var weighted = 0;
     for (var j = 0; j <= 7; j++) {
       var idx2 = dayIndex - j;
-      if (idx2 >= 0) sum2 += (rainArray[idx2] || 0) * FULL.weights[j];
+      if (idx2 >= 0) weighted += (rainArray[idx2] || 0) * FULL.weights[j];
     }
-    return sum2;
+    return weighted;
   }
 
-  var tabs = document.querySelectorAll('.tab');
-  for (var k = 0; k < tabs.length; k++) {
-    tabs[k].addEventListener('click', function() {
-      var btn = this;
-      var allTabs = document.querySelectorAll('.tab');
-      var allPanels = document.querySelectorAll('.panel');
-      for (var m = 0; m < allTabs.length; m++) allTabs[m].classList.remove('active');
-      for (var n = 0; n < allPanels.length; n++) allPanels[n].classList.remove('active');
-      btn.classList.add('active');
-      document.getElementById('panel-' + btn.dataset.panel).classList.add('active');
-      if (btn.dataset.panel === 'plan') updatePlan();
-      if (btn.dataset.panel === 'emission') calculateEmission();
+  function formatNumber(value, digits) {
+    return Number(value).toLocaleString("zh-TW", {
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits
     });
   }
 
-  document.getElementById('model-select').addEventListener('change', function(e) {
+  function calculateFertilizerN() {
+    var product = document.getElementById("fertilizer-product").value;
+    var customRow = document.getElementById("custom-n-row");
+    customRow.style.display = product === "custom" ? "grid" : "none";
+    var nPercent = product === "custom" ? Number(document.getElementById("custom-n-percent").value) : Number(product);
+    var amount = Number(document.getElementById("fertilizer-amount").value) || 0;
+    var unit = document.getElementById("fertilizer-unit").value;
+    var kgHa = unit === "bag_01ha" ? amount * 40 / 0.1 : amount;
+    var nKgHa = kgHa * nPercent / 100;
+    document.getElementById("converted-n").textContent = formatNumber(nKgHa, 1) + " kg N/ha";
+    document.getElementById("decision-n").value = formatNumber(nKgHa, 1).replace(/,/g, "");
+    updateDecision();
+  }
+
+  function updateDecision() {
+    var N = Number(document.getElementById("decision-n").value) || 0;
+    var rain = Number(document.getElementById("decision-rain").value) || 0;
+    var risk = classifyRisk(N, rain, "simple");
+    var th = getThreshold(N, "simple");
+    var card = document.getElementById("decision-result");
+    card.className = "result-card " + riskClassName(risk);
+
+    var title = document.getElementById("decision-title");
+    var summary = document.getElementById("decision-summary");
+    var why = document.getElementById("decision-why");
+    var action = document.getElementById("decision-action");
+
+    if (risk === 1) {
+      title.textContent = "綠燈，可以施肥";
+      summary.textContent = "目前雨量條件偏低，這次施肥後形成高排放的機會較小。";
+      why.textContent = "近 3 天雨量低於警戒門檻，土壤短時間過濕的機率較低。";
+      action.textContent = "可依原定計畫施肥；若天氣預報轉為大雨，建議重新檢查。";
+    } else if (risk === 2) {
+      title.textContent = "黃燈，先觀察";
+      summary.textContent = "雨量已接近警戒範圍，施肥後排放風險可能升高。";
+      why.textContent = "近 3 天雨量接近目前施氮量的警戒門檻（約 " + th.toFixed(1) + " mm）。";
+      action.textContent = "建議看明後天預報；若還會下雨，先延後 2-3 天會更穩妥。";
+    } else {
+      title.textContent = "紅燈，建議延後";
+      summary.textContent = "雨量已達高風險條件，現在施肥較容易造成排放高峰。";
+      why.textContent = "近 3 天雨量高於警戒門檻（約 " + th.toFixed(1) + " mm），土壤含水高時容易放大 N2O 排放。";
+      action.textContent = "建議避開這波雨，等雨後 3-5 天、土壤較穩定時再施肥。";
+    }
+  }
+
+  ["fertilizer-product", "custom-n-percent", "fertilizer-amount", "fertilizer-unit"].forEach(function(id) {
+    document.getElementById(id).addEventListener("input", calculateFertilizerN);
+    document.getElementById(id).addEventListener("change", calculateFertilizerN);
+  });
+  document.getElementById("decision-n").addEventListener("input", updateDecision);
+  document.getElementById("decision-rain").addEventListener("input", updateDecision);
+
+  document.querySelectorAll(".tab").forEach(function(tab) {
+    tab.addEventListener("click", function() {
+      document.querySelectorAll(".tab").forEach(function(t) { t.classList.remove("active"); });
+      document.querySelectorAll(".research-panel").forEach(function(p) { p.classList.remove("active"); });
+      tab.classList.add("active");
+      document.getElementById("panel-" + tab.dataset.panel).classList.add("active");
+      if (tab.dataset.panel === "plan") updatePlan();
+      if (tab.dataset.panel === "emission") calculateEmission();
+    });
+  });
+
+  document.getElementById("model-select").addEventListener("change", function(e) {
     currentModel = e.target.value;
-    var label = currentModel === 'simple' ? '3 天預估雨量' : '加權雨量值';
-    document.getElementById('quick-rain-label').textContent = label;
+    document.getElementById("quick-rain-label").textContent = currentModel === "simple" ? "3 天雨量" : "加權雨量";
     updateQuick();
     renderWeek();
     updatePlan();
   });
 
   function updateQuick() {
-    var N = Number(document.getElementById('quick-n').value);
-    var rain = Number(document.getElementById('quick-rain-3day').value) || 0;
+    var N = Number(document.getElementById("quick-n").value);
+    var rain = Number(document.getElementById("quick-rain-3day").value) || 0;
     var risk = classifyRisk(N, rain, currentModel);
-    var resultEl = document.getElementById('quick-result');
-    var titleEl = document.getElementById('quick-result-title');
-    var msgEl = document.getElementById('quick-result-msg');
+    var card = document.getElementById("quick-result");
     var th = getThreshold(N, currentModel);
-    var conf = currentModel === 'simple' ? SIMPLE : FULL;
-
-    resultEl.classList.remove('low', 'medium', 'high');
+    var conf = currentModel === "simple" ? SIMPLE : FULL;
+    card.className = "result-card " + riskClassName(risk);
     if (risk === 1) {
-      resultEl.classList.add('low');
-      titleEl.textContent = '低風險：可施肥';
-      msgEl.textContent = '當前' + conf.rainVarLabel + '（' + rain.toFixed(1) + '）低於觸發門檻，施肥對 N2O 排放影響有限，可按計畫執行。';
+      document.getElementById("quick-result-title").textContent = "低風險";
+      document.getElementById("quick-result-msg").textContent = conf.rainVarLabel + "為 " + rain.toFixed(1) + "，低於觸發門檻。";
     } else if (risk === 2) {
-      resultEl.classList.add('medium');
-      titleEl.textContent = '中風險：觀察';
-      msgEl.textContent = '目前' + conf.rainVarLabel + '（' + rain.toFixed(1) + '）接近但未超過觸發門檻（' + th.toFixed(1) + '），建議留意後續雨勢變化。';
+      document.getElementById("quick-result-title").textContent = "中風險";
+      document.getElementById("quick-result-msg").textContent = conf.rainVarLabel + "為 " + rain.toFixed(1) + "，接近門檻 " + th.toFixed(1) + "。";
     } else {
-      resultEl.classList.add('high');
-      titleEl.textContent = '高風險：延後施肥';
-      msgEl.textContent = '當前' + conf.rainVarLabel + '（' + rain.toFixed(1) + '）已超過觸發門檻（' + th.toFixed(1) + '），此時施肥易造成 N2O 脈衝排放，建議延後 3-5 天待雨勢過後。';
+      document.getElementById("quick-result-title").textContent = "高風險";
+      document.getElementById("quick-result-msg").textContent = conf.rainVarLabel + "為 " + rain.toFixed(1) + "，已超過門檻 " + th.toFixed(1) + "。";
     }
   }
 
-  document.getElementById('quick-n').addEventListener('change', updateQuick);
-  document.getElementById('quick-rain-3day').addEventListener('input', updateQuick);
+  document.getElementById("quick-n").addEventListener("change", updateQuick);
+  document.getElementById("quick-rain-3day").addEventListener("input", updateQuick);
 
   function initWeekGrid() {
-    var grid = document.getElementById('week-rain-grid');
-    grid.innerHTML = '';
+    var grid = document.getElementById("week-rain-grid");
+    grid.innerHTML = "";
     for (var i = 0; i < 7; i++) {
-      var cell = document.createElement('div');
-      cell.className = 'rain-cell';
-      cell.innerHTML = '<label>第 ' + (i + 1) + ' 天</label><input type="number" min="0" step="1" value="' + weekRains[i] + '" data-idx="' + i + '" />';
+      var cell = document.createElement("div");
+      cell.className = "rain-cell";
+      cell.innerHTML = '<label>第 ' + (i + 1) + ' 天</label><input type="number" min="0" step="1" value="' + weekRains[i] + '" data-idx="' + i + '">';
       grid.appendChild(cell);
     }
-    var inputs = grid.querySelectorAll('input');
-    for (var j = 0; j < inputs.length; j++) {
-      inputs[j].addEventListener('input', function() {
-        var idx = Number(this.dataset.idx);
-        weekRains[idx] = Number(this.value) || 0;
+    grid.querySelectorAll("input").forEach(function(input) {
+      input.addEventListener("input", function() {
+        weekRains[Number(input.dataset.idx)] = Number(input.value) || 0;
         renderWeek();
         updatePlan();
       });
-    }
+    });
   }
 
   function renderWeek() {
-    var N = Number(document.getElementById('week-n').value);
-    var cal = document.getElementById('week-calendar');
-    cal.innerHTML = '';
+    var N = Number(document.getElementById("week-n").value);
+    var cal = document.getElementById("week-calendar");
+    cal.innerHTML = "";
     var firstSafe = -1;
     var highDays = [];
     var mediumDays = [];
     for (var i = 0; i < 7; i++) {
       var rainVal = computeRainValue(i, weekRains, currentModel);
       var risk = classifyRisk(N, rainVal, currentModel);
-      var day = document.createElement('div');
-      day.className = 'day ' + (risk === 1 ? 'low' : risk === 2 ? 'medium' : 'high');
-      day.innerHTML = '<span class="day-label">第' + (i + 1) + '天</span><span class="day-rain">' + weekRains[i].toFixed(0) + 'mm</span>';
+      var day = document.createElement("div");
+      day.className = "day " + riskClassName(risk);
+      day.innerHTML = '<span class="day-label">第 ' + (i + 1) + ' 天</span><span class="day-rain">' + weekRains[i].toFixed(0) + ' mm</span>';
       cal.appendChild(day);
       if (risk === 1 && firstSafe < 0) firstSafe = i;
       if (risk === 3) highDays.push(i + 1);
       if (risk === 2) mediumDays.push(i + 1);
     }
-
-    var sug = document.getElementById('week-suggestion');
-    var msg = '';
-    if (highDays.length === 0 && mediumDays.length === 0) {
-      msg = '<b>本週全週低風險</b>，任一天皆可施肥。';
-    } else if (firstSafe >= 0) {
-      msg = '<b>建議施肥日：第 ' + (firstSafe + 1) + ' 天起</b>。';
-      if (highDays.length > 0) msg += ' 高風險日：第 ' + highDays.join('、') + ' 天（建議避開）。';
-      if (mediumDays.length > 0) msg += ' 中風險日：第 ' + mediumDays.join('、') + ' 天（可施但需留意）。';
-    } else {
-      msg = '<b>本週無合適施肥窗口</b>，建議延後至下週重新評估。';
-    }
-    sug.innerHTML = msg;
+    var msg = "";
+    if (!highDays.length && !mediumDays.length) msg = "本週全週低風險，任一天皆可施肥。";
+    else if (firstSafe >= 0) msg = "建議施肥日：第 " + (firstSafe + 1) + " 天起。高風險日：" + (highDays.length ? "第 " + highDays.join("、") + " 天。" : "無。");
+    else msg = "本週無明顯低風險窗口，建議延後至下週重新評估。";
+    document.getElementById("week-suggestion").textContent = msg;
   }
 
   window.weekReset = function(type) {
-    var vals = type === 'dry' ? [0, 0, 0, 0, 0, 0, 0] :
-      type === 'light' ? [2, 3, 1, 4, 2, 1, 3] :
+    weekRains = type === "dry" ? [0, 0, 0, 0, 0, 0, 0] :
+      type === "light" ? [2, 3, 1, 4, 2, 1, 3] :
       [15, 25, 8, 5, 30, 20, 10];
-    weekRains = vals.slice();
     initWeekGrid();
     renderWeek();
     updatePlan();
   };
-
-  document.getElementById('week-n').addEventListener('change', function() {
+  document.getElementById("week-n").addEventListener("change", function() {
     renderWeek();
     updatePlan();
   });
 
   function updatePlan() {
-    var planDay = Number(document.getElementById('plan-day').value);
-    var N = Number(document.getElementById('plan-n').value);
+    var planDay = Number(document.getElementById("plan-day").value);
+    var N = Number(document.getElementById("plan-n").value);
     var rainVal = computeRainValue(planDay, weekRains, currentModel);
     var risk = classifyRisk(N, rainVal, currentModel);
     var th = getThreshold(N, currentModel);
-    var conf = currentModel === 'simple' ? SIMPLE : FULL;
-
-    var titleEl = document.getElementById('plan-result-title');
-    var bodyEl = document.getElementById('plan-result-body');
-
+    var conf = currentModel === "simple" ? SIMPLE : FULL;
     var nextSafe = -1;
     for (var d = planDay; d < 7; d++) {
-      var rv = computeRainValue(d, weekRains, currentModel);
-      if (classifyRisk(N, rv, currentModel) === 1) {
+      if (classifyRisk(N, computeRainValue(d, weekRains, currentModel), currentModel) === 1) {
         nextSafe = d;
         break;
       }
     }
-
     if (risk === 1) {
-      titleEl.textContent = '可如期施肥';
-      bodyEl.innerHTML = '預定日（第 ' + (planDay + 1) + ' 天）的' + conf.rainVarLabel + '為 <b>' + rainVal.toFixed(1) + '</b>，低於觸發門檻 ' + th.toFixed(1) + '。此時施肥對 N2O 排放影響有限。';
+      document.getElementById("plan-result-title").textContent = "可如期施肥";
+      document.getElementById("plan-result-body").innerHTML = "預定日的 " + conf.rainVarLabel + " 為 <b>" + rainVal.toFixed(1) + "</b>，低於門檻 " + th.toFixed(1) + "。";
     } else if (risk === 2) {
-      titleEl.textContent = '建議觀察';
-      var s = '預定日的' + conf.rainVarLabel + '為 <b>' + rainVal.toFixed(1) + '</b>，接近觸發門檻 ' + th.toFixed(1) + '。可施肥但需留意後續雨勢。';
-      if (nextSafe >= 0 && nextSafe !== planDay) s += '<br><br>若希望更保險，可延後至 <b>第 ' + (nextSafe + 1) + ' 天</b>（預期為低風險日）。';
-      bodyEl.innerHTML = s;
+      document.getElementById("plan-result-title").textContent = "建議觀察";
+      document.getElementById("plan-result-body").innerHTML = "預定日接近門檻 " + th.toFixed(1) + "。若要更保守，可延後至第 " + (nextSafe >= 0 ? nextSafe + 1 : "下週") + " 天。";
     } else {
-      titleEl.textContent = '建議延後施肥';
-      var s2 = '預定日的' + conf.rainVarLabel + '為 <b>' + rainVal.toFixed(1) + '</b>，已超過觸發門檻 ' + th.toFixed(1) + '。此時施肥易觸發 N2O 高排放事件。';
-      if (nextSafe >= 0) s2 += '<br><br>建議改為 <b>第 ' + (nextSafe + 1) + ' 天</b>（預期為低風險日）。';
-      else s2 += '<br><br>本週後續皆非低風險，建議延後至下週重新評估。';
-      bodyEl.innerHTML = s2;
+      document.getElementById("plan-result-title").textContent = "建議延後施肥";
+      document.getElementById("plan-result-body").innerHTML = "預定日已超過門檻 " + th.toFixed(1) + "。建議改到 " + (nextSafe >= 0 ? "第 " + (nextSafe + 1) + " 天" : "下週") + "。";
     }
   }
+  document.getElementById("plan-day").addEventListener("change", updatePlan);
+  document.getElementById("plan-n").addEventListener("change", updatePlan);
 
-  document.getElementById('plan-day').addEventListener('change', updatePlan);
-  document.getElementById('plan-n').addEventListener('change', updatePlan);
-
-  function formatNumber(value, digits) {
-    return Number(value).toLocaleString('zh-TW', {
-      minimumFractionDigits: digits,
-      maximumFractionDigits: digits
+  function initEmissionRainGrid() {
+    var grid = document.getElementById("emission-rain-grid");
+    grid.innerHTML = "";
+    for (var i = 0; i < 7; i++) {
+      var cell = document.createElement("div");
+      cell.className = "rain-cell";
+      cell.innerHTML = '<label>第 ' + (i + 1) + ' 天</label><input type="number" min="0" step="1" value="' + emissionRains[i] + '" data-idx="' + i + '">';
+      grid.appendChild(cell);
+    }
+    grid.querySelectorAll("input").forEach(function(input) {
+      input.addEventListener("input", function() {
+        emissionRains[Number(input.dataset.idx)] = Number(input.value) || 0;
+        calculateEmission();
+      });
     });
   }
 
-  function initEmissionRainGrid() {
-    var grid = document.getElementById('emission-rain-grid');
-    grid.innerHTML = '';
-    for (var i = 0; i < 7; i++) {
-      var cell = document.createElement('div');
-      cell.className = 'rain-cell';
-      cell.innerHTML = '<label>第 ' + (i + 1) + ' 天</label><input type="number" min="0" step="1" value="' + emissionRains[i] + '" data-idx="' + i + '" />';
-      grid.appendChild(cell);
-    }
-    var inputs = grid.querySelectorAll('input');
-    for (var j = 0; j < inputs.length; j++) {
-      inputs[j].addEventListener('input', function() {
-        var idx = Number(this.dataset.idx);
-        emissionRains[idx] = Number(this.value) || 0;
-        calculateEmission();
-      });
-    }
-  }
-
   function outputUnitLabel(unit) {
-    if (unit === 'kg_N2O_ha') return 'kg N2O ha^-1';
-    return 'kg N2O-N ha^-1';
+    return unit === "kg_N2O_ha" ? "kg N2O ha^-1" : "kg N2O-N ha^-1";
   }
-
   function convertEmissionValue(kgN2ON, outputUnit) {
-    if (outputUnit === 'kg_N2O_ha') return kgN2ON * 44 / 28;
-    return kgN2ON;
+    return outputUnit === "kg_N2O_ha" ? kgN2ON * 44 / 28 : kgN2ON;
   }
-
   function computeEmissionRainWeighted(dayIndex, rainArray) {
     var value = 0;
     for (var i = 0; i <= 7; i++) {
@@ -918,10 +1202,8 @@
     }
     return value;
   }
-
   function predictDailyFlux(fertilizerN, temp, humidity, rainWeighted) {
-    var flux =
-      EMISSION_MODEL.intercept +
+    var flux = EMISSION_MODEL.intercept +
       EMISSION_MODEL.rain_weighted * rainWeighted +
       EMISSION_MODEL.fertilizer_N * fertilizerN +
       EMISSION_MODEL.temp_lag1 * temp +
@@ -929,94 +1211,81 @@
       EMISSION_MODEL.interaction * rainWeighted * fertilizerN;
     return Math.max(flux, 0);
   }
-
-  function calculateEmission() {
-    var fertilizerN = Number(document.getElementById('emission-fertilizer').value);
-    var temp = Number(document.getElementById('emission-temp').value);
-    var humidity = Number(document.getElementById('emission-humidity').value);
-    var outputUnit = document.getElementById('emission-output-unit').value;
-    var tableBody = document.getElementById('emission-table-body');
-    var mainValue = document.getElementById('emission-main-value');
-    var countValue = document.getElementById('emission-count-value');
-    var spanValue = document.getElementById('emission-span-value');
-    var detail = document.getElementById('emission-detail');
-
-    try {
-      if (!isFinite(fertilizerN) || fertilizerN <= 0) throw new Error('請輸入有效的施肥量。');
-      if (!isFinite(temp)) throw new Error('請輸入有效的平均氣溫。');
-      if (!isFinite(humidity)) throw new Error('請輸入有效的平均濕度。');
-
-      var rows = [];
-      var totalN2ON = 0;
-      var peakWeighted = 0;
-      for (var i = 0; i < 7; i++) {
-        var rain = Number(emissionRains[i]) || 0;
-        var rainWeighted = computeEmissionRainWeighted(i, emissionRains);
-        var dailyFluxN = predictDailyFlux(fertilizerN, temp, humidity, rainWeighted);
-        var convertedFlux = convertEmissionValue(dailyFluxN, outputUnit);
-        totalN2ON += dailyFluxN;
-        peakWeighted = Math.max(peakWeighted, rainWeighted);
-        rows.push({
-          day: '第 ' + (i + 1) + ' 天',
-          rain: rain,
-          rainWeighted: rainWeighted,
-          dailyFluxN: dailyFluxN,
-          convertedFlux: convertedFlux
-        });
-      }
-
-      var totalConverted = convertEmissionValue(totalN2ON, outputUnit);
-      var avgConverted = totalConverted / 7;
-
-      mainValue.textContent = formatNumber(totalConverted, 4) + ' ' + outputUnitLabel(outputUnit);
-      countValue.textContent = formatNumber(avgConverted, 4) + ' ' + outputUnitLabel(outputUnit) + ' / day';
-      spanValue.textContent = formatNumber(peakWeighted, 2);
-      detail.textContent = '本分頁預估的是施肥後 7 天排放量，模型使用施肥量、平均氣溫、平均濕度與 7 天雨量換算。';
-
-      tableBody.innerHTML = rows.map(function(item) {
-        return '<tr>' +
-          '<td>' + item.day + '</td>' +
-          '<td>' + formatNumber(item.rain, 1) + ' mm</td>' +
-          '<td>' + formatNumber(item.rainWeighted, 3) + '</td>' +
-          '<td>' + formatNumber(item.dailyFluxN, 6) + ' kg N2O-N ha^-1 d^-1</td>' +
-          '<td>' + formatNumber(item.convertedFlux, 6) + ' ' + outputUnitLabel(outputUnit) + '</td>' +
-          '</tr>';
-      }).join('');
-    } catch (err) {
-      mainValue.textContent = '格式需修正';
-      countValue.textContent = '-';
-      spanValue.textContent = '-';
-      detail.textContent = err.message;
-      tableBody.innerHTML = '<tr><td colspan="5">' + err.message + '</td></tr>';
-    }
+  function updateQuarterlyEmissions() {
+    var outputUnit = document.getElementById("emission-output-unit").value;
+    var eventTotal = convertEmissionValue(lastEventTotalN2ON, outputUnit);
+    var unitLabel = outputUnitLabel(outputUnit);
+    var yearTotal = 0;
+    ["q1", "q2", "q3", "q4"].forEach(function(q) {
+      var count = Number(document.getElementById("quarter-" + q).value) || 0;
+      var quarterTotal = eventTotal * count;
+      yearTotal += quarterTotal;
+      document.getElementById("quarter-" + q + "-total").textContent = formatNumber(quarterTotal, 4);
+    });
+    document.getElementById("quarter-year-total").textContent = formatNumber(yearTotal, 4);
+    document.getElementById("quarter-event-total").textContent = formatNumber(eventTotal, 4);
+    document.getElementById("quarter-unit-label").textContent = unitLabel;
   }
-
-  document.getElementById('emission-calc-btn').addEventListener('click', calculateEmission);
-  document.getElementById('emission-load-sample').addEventListener('click', function() {
-    document.getElementById('emission-fertilizer').value = '400';
-    document.getElementById('emission-temp').value = '18';
-    document.getElementById('emission-humidity').value = '82';
+  function calculateEmission() {
+    var fertilizerN = Number(document.getElementById("emission-fertilizer").value);
+    var temp = Number(document.getElementById("emission-temp").value);
+    var humidity = Number(document.getElementById("emission-humidity").value);
+    var outputUnit = document.getElementById("emission-output-unit").value;
+    var rows = [];
+    var totalN2ON = 0;
+    var peakWeighted = 0;
+    for (var i = 0; i < 7; i++) {
+      var rain = Number(emissionRains[i]) || 0;
+      var rainWeighted = computeEmissionRainWeighted(i, emissionRains);
+      var dailyFluxN = predictDailyFlux(fertilizerN, temp, humidity, rainWeighted);
+      var convertedFlux = convertEmissionValue(dailyFluxN, outputUnit);
+      totalN2ON += dailyFluxN;
+      peakWeighted = Math.max(peakWeighted, rainWeighted);
+      rows.push({ day: "第 " + (i + 1) + " 天", rain: rain, rainWeighted: rainWeighted, dailyFluxN: dailyFluxN, convertedFlux: convertedFlux });
+    }
+    lastEventTotalN2ON = totalN2ON;
+    var totalConverted = convertEmissionValue(totalN2ON, outputUnit);
+    var avgConverted = totalConverted / 7;
+    document.getElementById("emission-main-value").textContent = formatNumber(totalConverted, 4);
+    document.getElementById("emission-count-value").textContent = formatNumber(avgConverted, 4);
+    document.getElementById("emission-span-value").textContent = formatNumber(peakWeighted, 2);
+    document.getElementById("emission-detail").textContent = "單位：" + outputUnitLabel(outputUnit) + "；此結果為模型預估，適合事件比較與管理決策。";
+    document.getElementById("emission-table-body").innerHTML = rows.map(function(item) {
+      return "<tr><td>" + item.day + "</td><td>" + formatNumber(item.rain, 1) + " mm</td><td>" + formatNumber(item.rainWeighted, 3) + "</td><td>" + formatNumber(item.dailyFluxN, 6) + "</td><td>" + formatNumber(item.convertedFlux, 6) + " " + outputUnitLabel(outputUnit) + "</td></tr>";
+    }).join("");
+    updateQuarterlyEmissions();
+  }
+  document.getElementById("emission-calc-btn").addEventListener("click", calculateEmission);
+  document.getElementById("emission-load-sample").addEventListener("click", function() {
+    document.getElementById("emission-fertilizer").value = "400";
+    document.getElementById("emission-temp").value = "18";
+    document.getElementById("emission-humidity").value = "82";
     emissionRains = [5, 8, 12, 6, 3, 0, 2];
     initEmissionRainGrid();
     calculateEmission();
   });
-  document.getElementById('emission-load-dry').addEventListener('click', function() {
+  document.getElementById("emission-load-dry").addEventListener("click", function() {
     emissionRains = [0, 0, 0, 0, 0, 0, 0];
     initEmissionRainGrid();
     calculateEmission();
   });
-  document.getElementById('emission-load-wet').addEventListener('click', function() {
+  document.getElementById("emission-load-wet").addEventListener("click", function() {
     emissionRains = [12, 18, 35, 20, 8, 6, 10];
     initEmissionRainGrid();
     calculateEmission();
   });
-  document.getElementById('emission-fertilizer').addEventListener('change', calculateEmission);
-  document.getElementById('emission-temp').addEventListener('input', calculateEmission);
-  document.getElementById('emission-humidity').addEventListener('input', calculateEmission);
-  document.getElementById('emission-output-unit').addEventListener('change', calculateEmission);
+  ["emission-fertilizer", "emission-temp", "emission-humidity", "emission-output-unit"].forEach(function(id) {
+    document.getElementById(id).addEventListener("input", calculateEmission);
+    document.getElementById(id).addEventListener("change", calculateEmission);
+  });
+  ["quarter-q1", "quarter-q2", "quarter-q3", "quarter-q4"].forEach(function(id) {
+    document.getElementById(id).addEventListener("input", updateQuarterlyEmissions);
+    document.getElementById(id).addEventListener("change", updateQuarterlyEmissions);
+  });
 
   initWeekGrid();
   initEmissionRainGrid();
+  calculateFertilizerN();
   updateQuick();
   renderWeek();
   updatePlan();
