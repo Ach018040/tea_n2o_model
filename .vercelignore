@@ -1,0 +1,13 @@
+.git
+.reference_oh_my_openagent
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+data
+outputs
+scripts
+docs
+*.Rproj
+*.R
+*.md
