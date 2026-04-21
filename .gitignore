@@ -7,3 +7,4 @@ outputs/
 !outputs/tables/
 data/processed/
 data/field_master.xlsx
+.reference_oh_my_openagent/

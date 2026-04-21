@@ -183,6 +183,27 @@
     color: var(--ink);
     font-weight: 700;
   }
+  .workflow {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 18px;
+  }
+  .workflow-step {
+    border-left: 2px solid var(--leaf);
+    padding: 4px 0 4px 16px;
+  }
+  .workflow-step span,
+  .status-item span {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .workflow-step b,
+  .status-item b {
+    display: block;
+    margin-top: 2px;
+  }
   .panel {
     background: rgba(255, 255, 255, 0.86);
     border: 1px solid var(--line);
@@ -259,6 +280,18 @@
   .result-card.low { background: var(--green-bg); border-color: var(--green); }
   .result-card.medium { background: var(--amber-bg); border-color: var(--amber); }
   .result-card.high { background: var(--red-bg); border-color: var(--red); }
+  .status-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .status-item {
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(222, 216, 202, 0.8);
+    border-radius: 14px;
+    padding: 12px;
+  }
   .traffic {
     display: flex;
     align-items: center;
@@ -289,6 +322,38 @@
   }
   .research-shell.active {
     display: block;
+  }
+  .research-flow {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 12px;
+    align-items: stretch;
+    margin-bottom: 18px;
+  }
+  .flow-tile {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 16px;
+  }
+  .flow-tile b {
+    display: block;
+    margin-bottom: 4px;
+  }
+  .flow-tile p {
+    color: var(--muted);
+    margin: 0;
+    font-size: 13px;
+  }
+  .flow-button {
+    min-width: 160px;
+    border: 0;
+    border-radius: 18px;
+    background: var(--leaf);
+    color: #fff;
+    font-weight: 800;
+    cursor: pointer;
+    padding: 16px 18px;
   }
   .model-switch {
     display: flex;
@@ -486,6 +551,9 @@
     .section-grid,
     .emission-grid,
     .quarter-grid,
+    .workflow,
+    .status-strip,
+    .research-flow,
     .summary-grid {
       grid-template-columns: 1fr;
     }
@@ -523,8 +591,8 @@
   <section class="page active" id="page-home">
     <div class="hero">
       <div class="eyebrow">Tea N2O Decision Support</div>
-      <h1>先選你的使用情境。</h1>
-      <p class="lead">茶農快速判斷這次能不能施肥；研究者保留完整模型、預報、規劃與排放估算功能。</p>
+      <h1>先判斷用途，再得到答案。</h1>
+      <p class="lead">茶農看紅綠燈與做法；研究者看事件、季度與年度排放估算。工具先幫你分流，避免一進來就被參數淹沒。</p>
     </div>
     <div class="mode-grid">
       <button class="mode-card" data-page-jump="decision">
@@ -539,6 +607,23 @@
         <p>保留快速查詢、7 天預報、施肥規劃與排放計算器。</p>
         <span class="mode-action">進入研究模式</span>
       </button>
+    </div>
+    <div class="workflow">
+      <div class="workflow-step">
+        <span>Step 1</span>
+        <b>選模式</b>
+        <p class="hint">施肥現場用決策模式；整理資料與報表用研究模式。</p>
+      </div>
+      <div class="workflow-step">
+        <span>Step 2</span>
+        <b>輸入最少必要資料</b>
+        <p class="hint">決策模式只要施氮量與近 3 天雨量；研究模式可補天氣與季度事件數。</p>
+      </div>
+      <div class="workflow-step">
+        <span>Step 3</span>
+        <b>輸出可行動結果</b>
+        <p class="hint">得到紅綠燈、建議做法、7 天事件排放與季度合計。</p>
+      </div>
     </div>
   </section>
 
@@ -592,6 +677,20 @@
       <div class="result-card low" id="decision-result">
         <div class="traffic"><span class="light"></span><span id="decision-title">綠燈，可以施肥</span></div>
         <p id="decision-summary">目前雨量條件偏低，施肥後形成高排放的機會較小。</p>
+        <div class="status-strip">
+          <div class="status-item">
+            <span>施氮量</span>
+            <b id="decision-status-n">40 kg N/ha</b>
+          </div>
+          <div class="status-item">
+            <span>近 3 天雨量</span>
+            <b id="decision-status-rain">8 mm</b>
+          </div>
+          <div class="status-item">
+            <span>行動等級</span>
+            <b id="decision-status-level">可施肥</b>
+          </div>
+        </div>
         <div class="result-block">
           <b>為什麼？</b>
           <p id="decision-why">近 3 天雨量未達目前施氮量的風險門檻，土壤短時間過濕的機率較低。</p>
@@ -609,6 +708,18 @@
       <div class="eyebrow">Research Mode</div>
       <h2>研究估算工作台</h2>
       <p class="lead">保留完整參數、7 天時序、施肥規劃、事件型排放估算與季度彙整，適合研究、示範場域與管理報表。</p>
+    </div>
+
+    <div class="research-flow">
+      <div class="flow-tile">
+        <b>核心流程：事件到季度</b>
+        <p>先估單次施肥後 7 天排放，再用 Q1-Q4 事件數彙整成季度與年度輔助估算。</p>
+      </div>
+      <div class="flow-tile">
+        <b>報表定位</b>
+        <p>適合作為管理報表、減量比較與正式盤查附表，不直接取代盤查申報值。</p>
+      </div>
+      <button class="flow-button" data-page-jump="research" data-panel-jump="emission">直接做季度估算</button>
     </div>
 
     <div class="model-switch">
@@ -939,8 +1050,22 @@
   document.querySelectorAll(".nav-btn").forEach(function(btn) {
     btn.addEventListener("click", function() { showPage(btn.dataset.page); });
   });
+  function showResearchPanel(panelName) {
+    document.querySelectorAll(".tab").forEach(function(tab) {
+      tab.classList.toggle("active", tab.dataset.panel === panelName);
+    });
+    document.querySelectorAll(".research-panel").forEach(function(panel) {
+      panel.classList.remove("active");
+    });
+    document.getElementById("panel-" + panelName).classList.add("active");
+    if (panelName === "plan") updatePlan();
+    if (panelName === "emission") calculateEmission();
+  }
   document.querySelectorAll("[data-page-jump]").forEach(function(btn) {
-    btn.addEventListener("click", function() { showPage(btn.dataset.pageJump); });
+    btn.addEventListener("click", function() {
+      showPage(btn.dataset.pageJump);
+      if (btn.dataset.panelJump) showResearchPanel(btn.dataset.panelJump);
+    });
   });
 
   function getThreshold(N, model) {
@@ -1025,17 +1150,22 @@
       summary.textContent = "目前雨量條件偏低，這次施肥後形成高排放的機會較小。";
       why.textContent = "近 3 天雨量低於警戒門檻，土壤短時間過濕的機率較低。";
       action.textContent = "可依原定計畫施肥；若天氣預報轉為大雨，建議重新檢查。";
+      document.getElementById("decision-status-level").textContent = "可施肥";
     } else if (risk === 2) {
       title.textContent = "黃燈，先觀察";
       summary.textContent = "雨量已接近警戒範圍，施肥後排放風險可能升高。";
       why.textContent = "近 3 天雨量接近目前施氮量的警戒門檻（約 " + th.toFixed(1) + " mm）。";
       action.textContent = "建議看明後天預報；若還會下雨，先延後 2-3 天會更穩妥。";
+      document.getElementById("decision-status-level").textContent = "先觀察";
     } else {
       title.textContent = "紅燈，建議延後";
       summary.textContent = "雨量已達高風險條件，現在施肥較容易造成排放高峰。";
       why.textContent = "近 3 天雨量高於警戒門檻（約 " + th.toFixed(1) + " mm），土壤含水高時容易放大 N2O 排放。";
       action.textContent = "建議避開這波雨，等雨後 3-5 天、土壤較穩定時再施肥。";
+      document.getElementById("decision-status-level").textContent = "建議延後";
     }
+    document.getElementById("decision-status-n").textContent = formatNumber(N, 1) + " kg N/ha";
+    document.getElementById("decision-status-rain").textContent = formatNumber(rain, 1) + " mm";
   }
 
   ["fertilizer-product", "custom-n-percent", "fertilizer-amount", "fertilizer-unit"].forEach(function(id) {
@@ -1047,12 +1177,7 @@
 
   document.querySelectorAll(".tab").forEach(function(tab) {
     tab.addEventListener("click", function() {
-      document.querySelectorAll(".tab").forEach(function(t) { t.classList.remove("active"); });
-      document.querySelectorAll(".research-panel").forEach(function(p) { p.classList.remove("active"); });
-      tab.classList.add("active");
-      document.getElementById("panel-" + tab.dataset.panel).classList.add("active");
-      if (tab.dataset.panel === "plan") updatePlan();
-      if (tab.dataset.panel === "emission") calculateEmission();
+      showResearchPanel(tab.dataset.panel);
     });
   });
 
