@@ -538,6 +538,109 @@
     color: var(--muted);
     font-size: 12px;
   }
+  .hero-actions,
+  .role-grid,
+  .kpi-grid,
+  .dual-grid {
+    display: grid;
+    gap: 14px;
+  }
+  .hero-actions,
+  .role-grid,
+  .kpi-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .dual-grid {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+  .cta-card,
+  .timeline-step,
+  .record-row {
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 16px;
+  }
+  .timeline {
+    display: grid;
+    gap: 12px;
+    margin-top: 18px;
+  }
+  .timeline-step {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 14px;
+    align-items: start;
+  }
+  .timeline-no {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--leaf);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+  }
+  .metric-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 16px;
+  }
+  .metric-card .summary-value {
+    font-size: 28px;
+  }
+  .table-note,
+  .empty-state {
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .empty-state {
+    padding: 18px;
+    border: 1px dashed var(--line);
+    border-radius: 16px;
+    background: rgba(255,255,255,0.5);
+  }
+  .record-list {
+    display: grid;
+    gap: 12px;
+    margin-top: 14px;
+  }
+  .record-row {
+    display: grid;
+    grid-template-columns: 1.1fr 0.8fr 0.7fr 0.7fr 0.9fr;
+    gap: 10px;
+    align-items: center;
+  }
+  .risk-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 88px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .risk-pill.low {
+    background: var(--green-bg);
+    color: #40661d;
+  }
+  .risk-pill.medium {
+    background: var(--amber-bg);
+    color: #8a5c0b;
+  }
+  .risk-pill.high {
+    background: var(--red-bg);
+    color: #8a2f2b;
+  }
+  .page-tools {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
   @media (max-width: 760px) {
     .nav {
       align-items: flex-start;
@@ -554,6 +657,11 @@
     .workflow,
     .status-strip,
     .research-flow,
+    .hero-actions,
+    .role-grid,
+    .kpi-grid,
+    .dual-grid,
+    .record-row,
     .summary-grid {
       grid-template-columns: 1fr;
     }
@@ -576,13 +684,17 @@
 <body>
 <header class="site-header">
   <div class="shell nav">
-    <div class="brand">茶園 N2O 工具<span>施肥決策與研究估算</span></div>
+    <div class="brand">TeaCarbon<span>茶園低碳施肥與碳排管理平台</span></div>
     <nav class="nav-links" aria-label="主要導覽">
-      <button class="nav-btn active" data-page="home">首頁</button>
-      <button class="nav-btn" data-page="decision">施肥決策</button>
-      <button class="nav-btn" data-page="research">研究估算</button>
-      <button class="nav-btn" data-page="model">模型說明</button>
-      <button class="nav-btn" data-page="carbon">碳盤查定位</button>
+      <button class="nav-btn active" data-page="home">儀表板</button>
+      <button class="nav-btn" data-page="farm">我的茶園</button>
+      <button class="nav-btn" data-page="record">新增施肥紀錄</button>
+      <button class="nav-btn" data-page="decision">今日施肥判斷</button>
+      <button class="nav-btn" data-page="annual">年度碳排</button>
+      <button class="nav-btn" data-page="risk">高風險事件</button>
+      <button class="nav-btn" data-page="reports">報表輸出</button>
+      <button class="nav-btn" data-page="research">研究模型</button>
+      <button class="nav-btn" data-page="model">方法說明</button>
     </nav>
   </div>
 </header>
@@ -590,40 +702,150 @@
 <main class="shell">
   <section class="page active" id="page-home">
     <div class="hero">
-      <div class="eyebrow">Tea N2O Decision Support</div>
-      <h1>先判斷用途，再得到答案。</h1>
-      <p class="lead">茶農看紅綠燈與做法；研究者看事件、季度與年度排放估算。工具先幫你分流，避免一進來就被參數淹沒。</p>
+      <div class="eyebrow">TeaCarbon Platform</div>
+      <h1>把茶農每天的施肥行為，轉成低碳決策與年度管理資料。</h1>
+      <p class="lead">TeaCarbon 不是單次碳排計算器，而是從茶園建檔、施肥紀錄、雨量風險判斷、N2O 事件估算，一路串到季度與年度碳排管理報表的平台。</p>
     </div>
-    <div class="mode-grid">
-      <button class="mode-card" data-page-jump="decision">
-        <span class="mode-tag">給茶農</span>
-        <strong>施肥決策</strong>
-        <p>輸入肥料與三天雨量，直接看到紅綠燈、原因與建議做法。</p>
-        <span class="mode-action">進入決策模式</span>
+    <div class="hero-actions">
+      <button class="cta-card" data-page-jump="farm">
+        <span class="mode-tag">Step 1</span>
+        <strong>建立茶園基本資料</strong>
+        <p>先把茶園名稱、面積、位置與栽培型態存起來，後續紀錄才會累積成平台資料。</p>
       </button>
-      <button class="mode-card" data-page-jump="research">
-        <span class="mode-tag">給研究者</span>
-        <strong>研究估算</strong>
-        <p>保留快速查詢、7 天預報、施肥規劃與排放計算器。</p>
-        <span class="mode-action">進入研究模式</span>
+      <button class="cta-card" data-page-jump="record">
+        <span class="mode-tag">Step 2</span>
+        <strong>新增施肥紀錄</strong>
+        <p>輸入肥料、用量、面積、雨量與氣象條件，自動換算施氮量與風險等級。</p>
+      </button>
+      <button class="cta-card" data-page-jump="annual">
+        <span class="mode-tag">Step 3</span>
+        <strong>查看年度碳排</strong>
+        <p>把事件資料累積成高風險事件、年度 N2O 與 CO2e 管理指標。</p>
       </button>
     </div>
-    <div class="workflow">
-      <div class="workflow-step">
-        <span>Step 1</span>
-        <b>選模式</b>
-        <p class="hint">施肥現場用決策模式；整理資料與報表用研究模式。</p>
+    <div class="role-grid" style="margin-top:18px;">
+      <div class="panel">
+        <h3>茶農模式</h3>
+        <p class="hint">回答最實際的問題：今天適不適合施肥？這次風險高不高？怎麼做比較低碳？</p>
       </div>
-      <div class="workflow-step">
-        <span>Step 2</span>
-        <b>輸入最少必要資料</b>
-        <p class="hint">決策模式只要施氮量與近 3 天雨量；研究模式可補天氣與季度事件數。</p>
+      <div class="panel">
+        <h3>輔導模式</h3>
+        <p class="hint">彙整多茶園的施肥紀錄、高風險事件、季度與年度碳排，做示範場域與輔導報告。</p>
       </div>
-      <div class="workflow-step">
-        <span>Step 3</span>
-        <b>輸出可行動結果</b>
-        <p class="hint">得到紅綠燈、建議做法、7 天事件排放與季度合計。</p>
+      <div class="panel">
+        <h3>研究／盤查輔助模式</h3>
+        <p class="hint">保留 rain_weighted、事件型 N2O 估算、季度整併與方法限制，供研究與盤查附表使用。</p>
       </div>
+    </div>
+    <div class="timeline">
+      <div class="timeline-step"><div class="timeline-no">1</div><div><b>茶園建檔</b><p class="hint">建立農戶與茶園的基礎資料，成為後續紀錄的主檔。</p></div></div>
+      <div class="timeline-step"><div class="timeline-no">2</div><div><b>施肥紀錄</b><p class="hint">保存日期、肥料、用量與面積，形成可追溯活動數據。</p></div></div>
+      <div class="timeline-step"><div class="timeline-no">3</div><div><b>換算施氮量 kg N/ha</b><p class="hint">把「幾包肥」轉成可用於風險與碳排估算的標準化指標。</p></div></div>
+      <div class="timeline-step"><div class="timeline-no">4</div><div><b>串接或輸入雨量</b><p class="hint">以近 3 日雨量或研究版時序雨量作為風險觸發條件。</p></div></div>
+      <div class="timeline-step"><div class="timeline-no">5</div><div><b>紅黃綠燈風險判斷</b><p class="hint">把施肥時點翻譯成可行動的低碳建議。</p></div></div>
+      <div class="timeline-step"><div class="timeline-no">6</div><div><b>N2O 事件排放估算</b><p class="hint">以事件層級估算 7 天排放，供季度與年度整併。</p></div></div>
+      <div class="timeline-step"><div class="timeline-no">7</div><div><b>季度與年度碳排彙整</b><p class="hint">彙整成 N2O-N、N2O 與 CO2e 管理數據。</p></div></div>
+      <div class="timeline-step"><div class="timeline-no">8</div><div><b>改善建議與低碳管理報表</b><p class="hint">產出年度改善成果、風險事件統計與輔導報表。</p></div></div>
+    </div>
+  </section>
+
+  <section class="page" id="page-farm">
+    <div class="hero">
+      <div class="eyebrow">My Farm</div>
+      <h2>我的茶園</h2>
+      <p class="lead">先把茶園主檔建立起來，TeaCarbon 才能把後續施肥紀錄、風險事件與年度碳排串成同一份管理資料。</p>
+    </div>
+    <div class="dual-grid">
+      <div class="panel">
+        <h3>茶園建檔</h3>
+        <div class="input-row"><label for="farm-name">茶園名稱</label><input id="farm-name" type="text" placeholder="例如：大冇示範茶園"></div>
+        <div class="input-row"><label for="farm-area">面積（ha）</label><input id="farm-area" type="number" min="0" step="0.01" placeholder="0.5"></div>
+        <div class="input-row"><label for="farm-location">地點</label><input id="farm-location" type="text" placeholder="例如：南投鹿谷"></div>
+        <div class="input-row"><label for="farm-type">栽培型態</label><select id="farm-type"><option value="慣行">慣行</option><option value="有機">有機</option><option value="友善">友善</option></select></div>
+        <div class="input-row"><label for="farm-variety">茶種</label><input id="farm-variety" type="text" placeholder="例如：青心烏龍"></div>
+        <div class="btn-row">
+          <button class="btn primary" id="farm-save-btn">儲存茶園資料</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>目前主檔</h3>
+        <div id="farm-summary" class="empty-state">尚未建立茶園資料。</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" id="page-record">
+    <div class="hero">
+      <div class="eyebrow">Fertilizer Event</div>
+      <h2>新增施肥紀錄</h2>
+      <p class="lead">把單次施肥事件存起來，TeaCarbon 才能累積年度施氮量、高風險事件與碳排管理報表。</p>
+    </div>
+    <div class="dual-grid">
+      <div class="panel">
+        <h3>施肥事件輸入</h3>
+        <div class="input-row"><label for="event-date">施肥日期</label><input id="event-date" type="date"></div>
+        <div class="input-row"><label for="event-product">肥料產品</label><select id="event-product"><option value="20">台肥 1 號複合肥料（約 N 20%）</option><option value="16">台肥 5 號複合肥料（約 N 16%）</option><option value="21">硫酸銨（約 N 21%）</option><option value="46">尿素（約 N 46%）</option><option value="custom">自訂氮含量</option></select></div>
+        <div class="input-row" id="event-custom-n-row" style="display:none;"><label for="event-custom-n">自訂 N %</label><input id="event-custom-n" type="number" min="0" max="100" step="0.1" value="20"></div>
+        <div class="input-row"><label for="event-amount">施用量</label><div class="unit-row"><input id="event-amount" type="number" min="0" step="1" value="200"><select id="event-unit"><option value="kg">kg</option><option value="bag">包（40kg/包）</option></select></div></div>
+        <div class="input-row"><label for="event-area">施肥面積（ha）</label><input id="event-area" type="number" min="0.01" step="0.01" value="1"></div>
+        <div class="input-row"><label for="event-rain">近 3 天雨量（mm）</label><input id="event-rain" type="number" min="0" step="1" value="8"></div>
+        <div class="input-row"><label for="event-temp">平均氣溫（°C）</label><input id="event-temp" type="number" min="0" step="0.1" value="18"></div>
+        <div class="input-row"><label for="event-humidity">平均濕度（%）</label><input id="event-humidity" type="number" min="0" max="100" step="1" value="82"></div>
+        <p class="hint">換算施氮量：<b id="event-n-output">40.0 kg N/ha</b>｜風險：<b id="event-risk-output">低風險</b></p>
+        <div class="btn-row">
+          <button class="btn primary" id="event-save-btn">儲存施肥紀錄</button>
+          <button class="btn" id="event-prefill-farm-btn">帶入茶園面積</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>最近施肥紀錄</h3>
+        <div id="recent-records" class="empty-state">尚未有施肥紀錄。</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" id="page-annual">
+    <div class="hero">
+      <div class="eyebrow">Annual Carbon</div>
+      <h2>年度碳排</h2>
+      <p class="lead">把單次施肥事件累積成年度施氮量、高風險事件、N2O 與 CO2e，讓茶園管理從單次判斷走向年度低碳管理。</p>
+    </div>
+    <div class="kpi-grid">
+      <div class="metric-card"><div class="summary-label">施肥事件數</div><div class="summary-value" id="annual-event-count">0</div></div>
+      <div class="metric-card"><div class="summary-label">年度施氮量</div><div class="summary-value" id="annual-n-total">0.0</div><div class="hint">kg N/ha</div></div>
+      <div class="metric-card"><div class="summary-label">年度 CO2e</div><div class="summary-value" id="annual-co2e-total">0.0</div><div class="hint">kg CO2e/ha</div></div>
+    </div>
+    <div class="panel" style="margin-top:18px;">
+      <h3>年度事件明細</h3>
+      <div id="annual-record-table" class="empty-state">尚未有年度資料可彙整。</div>
+    </div>
+  </section>
+
+  <section class="page" id="page-risk">
+    <div class="hero">
+      <div class="eyebrow">High-risk Events</div>
+      <h2>高風險事件</h2>
+      <p class="lead">找出紅燈與黃燈施肥事件，方便茶農回顧、輔導單位追蹤與後續改善。</p>
+    </div>
+    <div class="panel">
+      <h3>事件清單</h3>
+      <div id="risk-event-list" class="empty-state">目前沒有高風險或中風險事件。</div>
+    </div>
+  </section>
+
+  <section class="page" id="page-reports">
+    <div class="hero">
+      <div class="eyebrow">Reports</div>
+      <h2>報表輸出</h2>
+      <p class="lead">以目前原型資料輸出茶園施肥紀錄與年度碳排摘要，作為茶農版、輔導版與盤查輔助版報表的起點。</p>
+    </div>
+    <div class="panel">
+      <h3>匯出工具</h3>
+      <div class="page-tools">
+        <button class="btn primary" id="export-csv-btn">匯出施肥紀錄 CSV</button>
+        <button class="btn" id="export-summary-btn">下載年度摘要 JSON</button>
+      </div>
+      <p class="hint">目前 v1 原型先提供結構化資料匯出；之後可再接 PDF / Excel 正式報表樣板。</p>
     </div>
   </section>
 
@@ -940,9 +1162,9 @@
 
   <section class="page" id="page-model">
     <div class="hero">
-      <div class="eyebrow">Model Notes</div>
-      <h2>模型說明</h2>
-      <p class="lead">此頁集中放置研究者需要的模型背景、參數來源、驗證結果與使用限制。</p>
+      <div class="eyebrow">Method Notes</div>
+      <h2>方法說明</h2>
+      <p class="lead">此頁說明 TeaCarbon 的模型基礎、計算方式、平台定位與使用限制，避免將原型結果誤作正式申報值。</p>
     </div>
     <div class="doc-layout">
       <details open>
@@ -999,7 +1221,7 @@
     </div>
   </section>
 
-  <p class="footer-note">研究與開發：ChengAn（茶園 N2O 排放研究）｜資料期間：2025/1/1 - 2026/4/18｜版本 v2.0</p>
+  <p class="footer-note">TeaCarbon v1 Prototype｜茶園低碳施肥與碳排管理平台｜資料期間：2025/1/1 - 2026/4/18｜原型版本 v1.0</p>
 </main>
 
 <script>
@@ -1036,6 +1258,10 @@
   var weekRains = [0, 0, 0, 0, 0, 0, 0];
   var emissionRains = [5, 8, 12, 6, 3, 0, 2];
   var lastEventTotalN2ON = 0;
+  var STORAGE = {
+    farm: "teacarbon_farm_v1",
+    events: "teacarbon_events_v1"
+  };
 
   function showPage(name) {
     document.querySelectorAll(".page").forEach(function(page) {
@@ -1044,6 +1270,9 @@
     document.querySelectorAll(".nav-btn").forEach(function(btn) {
       btn.classList.toggle("active", btn.dataset.page === name);
     });
+    if (name === "home" || name === "annual" || name === "risk" || name === "reports" || name === "record" || name === "farm") {
+      renderPlatformData();
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -1117,6 +1346,135 @@
       maximumFractionDigits: digits
     });
   }
+  function loadFarm() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE.farm) || "null");
+    } catch (err) {
+      return null;
+    }
+  }
+  function saveFarm(data) {
+    localStorage.setItem(STORAGE.farm, JSON.stringify(data));
+  }
+  function loadEvents() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE.events) || "[]");
+    } catch (err) {
+      return [];
+    }
+  }
+  function saveEvents(list) {
+    localStorage.setItem(STORAGE.events, JSON.stringify(list));
+  }
+  function estimateEventEmission(nKgHa, rain3day, temp, humidity) {
+    var syntheticRain = [rain3day / 3, rain3day / 3, rain3day / 3, 0, 0, 0, 0];
+    var totalN2ON = 0;
+    for (var i = 0; i < 7; i++) {
+      var weighted = computeEmissionRainWeighted(i, syntheticRain);
+      totalN2ON += predictDailyFlux(nKgHa, temp, humidity, weighted);
+    }
+    var n2o = totalN2ON * 44 / 28;
+    var co2e = n2o * 273;
+    return {
+      n2o_n_kg_ha: totalN2ON,
+      n2o_kg_ha: n2o,
+      co2e_kg_ha: co2e
+    };
+  }
+  function renderFarmSummary() {
+    var farm = loadFarm();
+    var box = document.getElementById("farm-summary");
+    if (!farm) {
+      box.className = "empty-state";
+      box.textContent = "尚未建立茶園資料。";
+      return;
+    }
+    box.className = "";
+    box.innerHTML = "<div class='record-list'>" +
+      "<div class='record-row'><b>茶園名稱</b><span>" + farm.name + "</span><b>面積</b><span>" + formatNumber(farm.area_ha, 2) + " ha</span><span></span></div>" +
+      "<div class='record-row'><b>地點</b><span>" + farm.location + "</span><b>栽培型態</b><span>" + farm.type + "</span><span></span></div>" +
+      "<div class='record-row'><b>茶種</b><span>" + farm.variety + "</span><b>更新時間</b><span>" + farm.updated_at + "</span><span></span></div>" +
+      "</div>";
+  }
+  function renderRecentRecords() {
+    var events = loadEvents().slice().reverse().slice(0, 5);
+    var box = document.getElementById("recent-records");
+    if (!events.length) {
+      box.className = "empty-state";
+      box.textContent = "尚未有施肥紀錄。";
+      return;
+    }
+    box.className = "record-list";
+    box.innerHTML = events.map(function(item) {
+      return "<div class='record-row'>" +
+        "<div><b>" + item.date + "</b><div class='hint'>" + item.product_name + "</div></div>" +
+        "<div>" + formatNumber(item.n_kg_ha, 1) + " kg N/ha</div>" +
+        "<div>" + formatNumber(item.rain3day_mm, 1) + " mm</div>" +
+        "<div><span class='risk-pill " + riskClassName(item.risk_level) + "'>" + item.risk_label + "</span></div>" +
+        "<div>" + formatNumber(item.co2e_kg_ha, 2) + " kg CO2e/ha</div>" +
+        "</div>";
+    }).join("");
+  }
+  function renderAnnualSummary() {
+    var events = loadEvents();
+    var totalN = 0;
+    var totalCo2e = 0;
+    var totalN2ON = 0;
+    events.forEach(function(item) {
+      totalN += item.n_kg_ha;
+      totalCo2e += item.co2e_kg_ha;
+      totalN2ON += item.n2o_n_kg_ha;
+    });
+    document.getElementById("annual-event-count").textContent = String(events.length);
+    document.getElementById("annual-n-total").textContent = formatNumber(totalN, 1);
+    document.getElementById("annual-co2e-total").textContent = formatNumber(totalCo2e, 1);
+    var table = document.getElementById("annual-record-table");
+    if (!events.length) {
+      table.className = "empty-state";
+      table.textContent = "尚未有年度資料可彙整。";
+      return;
+    }
+    table.className = "";
+    table.innerHTML = "<table><thead><tr><th>日期</th><th>施氮量</th><th>風險</th><th>N2O-N</th><th>CO2e</th></tr></thead><tbody>" +
+      events.map(function(item) {
+        return "<tr><td>" + item.date + "</td><td>" + formatNumber(item.n_kg_ha, 1) + " kg N/ha</td><td>" + item.risk_label + "</td><td>" + formatNumber(item.n2o_n_kg_ha, 4) + "</td><td>" + formatNumber(item.co2e_kg_ha, 2) + "</td></tr>";
+      }).join("") +
+      "<tr><td><b>合計</b></td><td><b>" + formatNumber(totalN, 1) + "</b></td><td>-</td><td><b>" + formatNumber(totalN2ON, 4) + "</b></td><td><b>" + formatNumber(totalCo2e, 2) + "</b></td></tr>" +
+      "</tbody></table>";
+  }
+  function renderRiskEvents() {
+    var events = loadEvents().filter(function(item) { return item.risk_level >= 2; }).reverse();
+    var box = document.getElementById("risk-event-list");
+    if (!events.length) {
+      box.className = "empty-state";
+      box.textContent = "目前沒有高風險或中風險事件。";
+      return;
+    }
+    box.className = "record-list";
+    box.innerHTML = events.map(function(item) {
+      return "<div class='record-row'>" +
+        "<div><b>" + item.date + "</b><div class='hint'>" + item.product_name + "</div></div>" +
+        "<div>" + formatNumber(item.rain3day_mm, 1) + " mm</div>" +
+        "<div>" + formatNumber(item.n_kg_ha, 1) + " kg N/ha</div>" +
+        "<div><span class='risk-pill " + riskClassName(item.risk_level) + "'>" + item.risk_label + "</span></div>" +
+        "<div>" + item.action_text + "</div>" +
+        "</div>";
+    }).join("");
+  }
+  function renderDashboard() {
+    var events = loadEvents();
+    var highRisk = events.filter(function(item) { return item.risk_level === 3; }).length;
+    var totalCo2e = events.reduce(function(sum, item) { return sum + item.co2e_kg_ha; }, 0);
+    var totalN = events.reduce(function(sum, item) { return sum + item.n_kg_ha; }, 0);
+    var annualBox = document.getElementById("home");
+    if (!annualBox) return;
+  }
+  function renderPlatformData() {
+    renderFarmSummary();
+    renderRecentRecords();
+    renderAnnualSummary();
+    renderRiskEvents();
+  }
 
   function calculateFertilizerN() {
     var product = document.getElementById("fertilizer-product").value;
@@ -1174,6 +1532,107 @@
   });
   document.getElementById("decision-n").addEventListener("input", updateDecision);
   document.getElementById("decision-rain").addEventListener("input", updateDecision);
+
+  function updateEventForm() {
+    var product = document.getElementById("event-product").value;
+    document.getElementById("event-custom-n-row").style.display = product === "custom" ? "grid" : "none";
+    var nPercent = product === "custom" ? Number(document.getElementById("event-custom-n").value) : Number(product);
+    var amount = Number(document.getElementById("event-amount").value) || 0;
+    var area = Number(document.getElementById("event-area").value) || 1;
+    var unit = document.getElementById("event-unit").value;
+    var totalKg = unit === "bag" ? amount * 40 : amount;
+    var nKgHa = area > 0 ? totalKg * nPercent / 100 / area : 0;
+    var rain = Number(document.getElementById("event-rain").value) || 0;
+    var risk = classifyRisk(nKgHa, rain, "simple");
+    document.getElementById("event-n-output").textContent = formatNumber(nKgHa, 1) + " kg N/ha";
+    document.getElementById("event-risk-output").textContent = risk === 1 ? "低風險" : risk === 2 ? "中風險" : "高風險";
+    return {
+      nPercent: nPercent,
+      nKgHa: nKgHa,
+      risk: risk
+    };
+  }
+  ["event-product", "event-custom-n", "event-amount", "event-unit", "event-area", "event-rain"].forEach(function(id) {
+    document.getElementById(id).addEventListener("input", updateEventForm);
+    document.getElementById(id).addEventListener("change", updateEventForm);
+  });
+  document.getElementById("farm-save-btn").addEventListener("click", function() {
+    var farm = {
+      name: document.getElementById("farm-name").value || "未命名茶園",
+      area_ha: Number(document.getElementById("farm-area").value) || 0,
+      location: document.getElementById("farm-location").value || "-",
+      type: document.getElementById("farm-type").value,
+      variety: document.getElementById("farm-variety").value || "-",
+      updated_at: new Date().toLocaleString("zh-TW")
+    };
+    saveFarm(farm);
+    renderPlatformData();
+  });
+  document.getElementById("event-prefill-farm-btn").addEventListener("click", function() {
+    var farm = loadFarm();
+    if (farm && farm.area_ha) {
+      document.getElementById("event-area").value = farm.area_ha;
+      updateEventForm();
+    }
+  });
+  document.getElementById("event-save-btn").addEventListener("click", function() {
+    var derived = updateEventForm();
+    var rain = Number(document.getElementById("event-rain").value) || 0;
+    var temp = Number(document.getElementById("event-temp").value) || 18;
+    var humidity = Number(document.getElementById("event-humidity").value) || 82;
+    var emissions = estimateEventEmission(derived.nKgHa, rain, temp, humidity);
+    var risk = derived.risk;
+    var actionText = risk === 1 ? "可施肥" : risk === 2 ? "先觀察" : "建議延後";
+    var productSelect = document.getElementById("event-product");
+    var productName = productSelect.options[productSelect.selectedIndex].text;
+    var list = loadEvents();
+    list.push({
+      id: "evt_" + Date.now(),
+      date: document.getElementById("event-date").value || new Date().toISOString().slice(0, 10),
+      product_name: productName,
+      amount_value: Number(document.getElementById("event-amount").value) || 0,
+      amount_unit: document.getElementById("event-unit").value,
+      area_ha: Number(document.getElementById("event-area").value) || 1,
+      n_kg_ha: derived.nKgHa,
+      rain3day_mm: rain,
+      temp_c: temp,
+      humidity_percent: humidity,
+      risk_level: risk,
+      risk_label: risk === 1 ? "低風險" : risk === 2 ? "中風險" : "高風險",
+      action_text: actionText,
+      n2o_n_kg_ha: emissions.n2o_n_kg_ha,
+      n2o_kg_ha: emissions.n2o_kg_ha,
+      co2e_kg_ha: emissions.co2e_kg_ha
+    });
+    saveEvents(list);
+    renderPlatformData();
+    showPage("annual");
+  });
+  function downloadFile(filename, content, mime) {
+    var blob = new Blob([content], { type: mime });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+  document.getElementById("export-csv-btn").addEventListener("click", function() {
+    var rows = [["date", "product", "n_kg_ha", "rain3day_mm", "risk", "n2o_n_kg_ha", "co2e_kg_ha"]].concat(loadEvents().map(function(item) {
+      return [item.date, item.product_name, item.n_kg_ha, item.rain3day_mm, item.risk_label, item.n2o_n_kg_ha, item.co2e_kg_ha];
+    }));
+    var csv = rows.map(function(row) { return row.join(","); }).join("\n");
+    downloadFile("teacarbon_events.csv", csv, "text/csv;charset=utf-8");
+  });
+  document.getElementById("export-summary-btn").addEventListener("click", function() {
+    var data = {
+      farm: loadFarm(),
+      events: loadEvents(),
+      exported_at: new Date().toISOString(),
+      note: "TeaCarbon v1 prototype export"
+    };
+    downloadFile("teacarbon_summary.json", JSON.stringify(data, null, 2), "application/json;charset=utf-8");
+  });
 
   document.querySelectorAll(".tab").forEach(function(tab) {
     tab.addEventListener("click", function() {
@@ -1408,13 +1867,24 @@
     document.getElementById(id).addEventListener("change", updateQuarterlyEmissions);
   });
 
+  var savedFarm = loadFarm();
+  if (savedFarm) {
+    document.getElementById("farm-name").value = savedFarm.name || "";
+    document.getElementById("farm-area").value = savedFarm.area_ha || "";
+    document.getElementById("farm-location").value = savedFarm.location || "";
+    document.getElementById("farm-type").value = savedFarm.type || "慣行";
+    document.getElementById("farm-variety").value = savedFarm.variety || "";
+  }
+  document.getElementById("event-date").value = new Date().toISOString().slice(0, 10);
   initWeekGrid();
   initEmissionRainGrid();
   calculateFertilizerN();
+  updateEventForm();
   updateQuick();
   renderWeek();
   updatePlan();
   calculateEmission();
+  renderPlatformData();
 })();
 </script>
 </body>
