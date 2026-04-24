@@ -382,6 +382,54 @@
     border-radius: 14px;
     background: rgba(49, 91, 45, 0.08);
   }
+  .wizard-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+  .wizard-steps {
+    display: grid;
+    gap: 12px;
+  }
+  .wizard-step-btn {
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: rgba(255,255,255,0.86);
+    color: var(--ink);
+    padding: 14px;
+    text-align: left;
+    cursor: pointer;
+  }
+  .wizard-step-btn.active {
+    border-color: var(--leaf);
+    background: var(--leaf-soft);
+  }
+  .wizard-step-btn span {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .wizard-panel {
+    display: none;
+  }
+  .wizard-panel.active {
+    display: block;
+  }
+  .advanced-box {
+    margin-top: 16px;
+    border: 1px dashed var(--line);
+    border-radius: 16px;
+    background: rgba(255,255,255,0.55);
+    padding: 14px;
+  }
+  .advanced-box summary {
+    cursor: pointer;
+    font-weight: 700;
+  }
+  .advanced-box[open] summary {
+    margin-bottom: 12px;
+  }
   .footer-note {
     margin-top: 28px;
     color: var(--muted);
@@ -394,6 +442,7 @@
     .module-grid,
     .bridge-grid,
     .template-grid,
+    .wizard-layout,
     .progress-mini,
     .hero-cards,
     .flow-grid,
@@ -514,43 +563,71 @@
       <p class="hint">每一張卡代表一批茶目前的資料完整度。先看還缺哪一步，再按下一步往下填。</p>
       <div id="batch-overview" class="empty-state">尚未建立批次流程。請先從「登記這批茶菁」開始。</div>
     </div>
-    <div class="module-grid">
-      <div class="module-card">
-        <span class="tag">Step 1</span>
-        <strong>登記這批茶的加工資料</strong>
-        <p class="hint">請先選這批茶菁來自哪一次採收，再輸入用電、燃料與最後做出的乾茶重量。</p>
-        <div class="input-row"><label for="processing-harvest-id">這批茶菁來自哪一次採收？</label><select id="processing-harvest-id"></select></div>
-        <div class="input-row"><label for="processing-tea-type">茶類</label><select id="processing-tea-type"><option value="烏龍茶">烏龍茶</option><option value="綠茶">綠茶</option><option value="紅茶">紅茶</option></select></div>
-        <div class="input-row"><label for="processing-electricity">這批加工用了多少電？（kWh）</label><input id="processing-electricity" type="number" min="0" step="0.1" value="45"></div>
-        <div class="input-row"><label for="processing-fuel-type">加工時使用哪一種燃料？</label><select id="processing-fuel-type"><option value="LPG">LPG</option><option value="柴油">柴油</option><option value="天然氣">天然氣</option><option value="木材">木材</option></select></div>
-        <div class="input-row"><label for="processing-fuel-amount">這批加工用了多少燃料？</label><input id="processing-fuel-amount" type="number" min="0" step="0.1" value="12"></div>
-        <div class="input-row"><label for="processing-output">最後做出多少公斤乾茶？</label><input id="processing-output" type="number" min="0" step="0.1" value="28"></div>
-        <div class="btn-row"><button class="btn primary" id="processing-save-btn">儲存加工資料</button></div>
+    <div class="wizard-layout">
+      <div class="wizard-steps" aria-label="單一批次精靈">
+        <button class="wizard-step-btn active" data-wizard-step="processing"><span>Step 1</span>加工資料</button>
+        <button class="wizard-step-btn" data-wizard-step="packaging"><span>Step 2</span>包裝資料</button>
+        <button class="wizard-step-btn" data-wizard-step="distribution"><span>Step 3</span>運輸與倉儲</button>
       </div>
-      <div class="module-card">
-        <span class="tag">Step 2</span>
-        <strong>登記包裝資料</strong>
-        <p class="hint">請輸入這批茶使用的包材種類、重量與數量。這些資料會用來估算每包茶的包裝碳排。</p>
-        <div class="input-row"><label for="packaging-processing-id">這批包裝接的是哪一筆加工資料？</label><select id="packaging-processing-id"></select></div>
-        <div class="input-row"><label for="packaging-type">包材類型</label><select id="packaging-type"><option value="真空袋">真空袋</option><option value="鋁箔袋">鋁箔袋</option><option value="紙盒">紙盒</option><option value="鐵罐">鐵罐</option><option value="禮盒">禮盒</option></select></div>
-        <div class="input-row"><label for="packaging-material">材質</label><select id="packaging-material"><option value="plastic">plastic</option><option value="paper">paper</option><option value="metal">metal</option></select></div>
-        <div class="input-row"><label for="packaging-weight-g">單件包材重量（g）</label><input id="packaging-weight-g" type="number" min="0" step="0.1" value="15"></div>
-        <div class="input-row"><label for="packaging-quantity">數量</label><input id="packaging-quantity" type="number" min="0" step="1" value="40"></div>
-        <div class="input-row"><label for="packaging-product-weight-g">單件茶葉重量（g）</label><input id="packaging-product-weight-g" type="number" min="0" step="1" value="150"></div>
-        <div class="btn-row"><button class="btn primary" id="packaging-save-btn">儲存包裝資料</button></div>
-      </div>
-      <div class="module-card">
-        <span class="tag">Step 3</span>
-        <strong>登記運輸與倉儲</strong>
-        <p class="hint">請輸入這批茶從哪裡送到哪裡、距離多遠、用什麼車運送。補完後即可計算產品端碳排。</p>
-        <div class="input-row"><label for="distribution-packaging-id">這筆運輸接的是哪一筆包裝資料？</label><select id="distribution-packaging-id"></select></div>
-        <div class="input-row"><label for="distribution-from">起點</label><input id="distribution-from" type="text" value="茶廠"></div>
-        <div class="input-row"><label for="distribution-to">終點</label><input id="distribution-to" type="text" value="通路"></div>
-        <div class="input-row"><label for="distribution-distance">距離（km）</label><input id="distribution-distance" type="number" min="0" step="0.1" value="35"></div>
-        <div class="input-row"><label for="distribution-weight">重量（kg）</label><input id="distribution-weight" type="number" min="0" step="0.1" value="20"></div>
-        <div class="input-row"><label for="distribution-vehicle">運具</label><select id="distribution-vehicle"><option value="小貨車">小貨車</option><option value="卡車">卡車</option><option value="機車">機車</option></select></div>
-        <div class="input-row"><label for="distribution-storage-kwh">倉儲用電（kWh）</label><input id="distribution-storage-kwh" type="number" min="0" step="0.1" value="18"></div>
-        <div class="btn-row"><button class="btn primary" id="distribution-save-btn">儲存運輸資料</button></div>
+      <div>
+        <div class="module-card wizard-panel active" id="wizard-processing">
+          <span class="tag">Step 1</span>
+          <strong>登記這批茶的加工資料</strong>
+          <p class="hint">請先選這批茶菁來自哪一次採收，再輸入用電、燃料與最後做出的乾茶重量。</p>
+          <div class="input-row"><label for="processing-harvest-id">這批茶菁來自哪一次採收？</label><select id="processing-harvest-id"></select></div>
+          <div class="input-row"><label for="processing-tea-type">茶類</label><select id="processing-tea-type"><option value="烏龍茶">烏龍茶</option><option value="綠茶">綠茶</option><option value="紅茶">紅茶</option></select></div>
+          <div class="input-row"><label for="processing-electricity">這批加工用了多少電？（kWh）</label><input id="processing-electricity" type="number" min="0" step="0.1" value="45"></div>
+          <details class="advanced-box">
+            <summary>進階欄位</summary>
+            <p class="hint">進階資料可提升加工階段估算精準度。如果目前不知道，可以先略過，之後補充。</p>
+            <div class="input-row"><label for="processing-fuel-type">加工時使用哪一種燃料？</label><select id="processing-fuel-type"><option value="LPG">LPG</option><option value="柴油">柴油</option><option value="天然氣">天然氣</option><option value="木材">木材</option></select></div>
+            <div class="input-row"><label for="processing-fuel-amount">這批加工用了多少燃料？</label><input id="processing-fuel-amount" type="number" min="0" step="0.1" value="12"></div>
+          </details>
+          <div class="input-row"><label for="processing-output">最後做出多少公斤乾茶？</label><input id="processing-output" type="number" min="0" step="0.1" value="28"></div>
+          <div class="btn-row">
+            <button class="btn primary" id="processing-save-btn">儲存加工資料</button>
+            <button class="btn" data-wizard-next="packaging">下一步：登記包裝資料</button>
+          </div>
+        </div>
+        <div class="module-card wizard-panel" id="wizard-packaging">
+          <span class="tag">Step 2</span>
+          <strong>登記包裝資料</strong>
+          <p class="hint">請輸入這批茶使用的包材種類、重量與數量。這些資料會用來估算每包茶的包裝碳排。</p>
+          <div class="input-row"><label for="packaging-processing-id">這批包裝接的是哪一筆加工資料？</label><select id="packaging-processing-id"></select></div>
+          <div class="input-row"><label for="packaging-type">包材類型</label><select id="packaging-type"><option value="真空袋">真空袋</option><option value="鋁箔袋">鋁箔袋</option><option value="紙盒">紙盒</option><option value="鐵罐">鐵罐</option><option value="禮盒">禮盒</option></select></div>
+          <div class="input-row"><label for="packaging-quantity">數量</label><input id="packaging-quantity" type="number" min="0" step="1" value="40"></div>
+          <details class="advanced-box">
+            <summary>進階欄位</summary>
+            <p class="hint">進階資料可補上材質、包材重量與產品規格，讓產品端碳排估算更完整。</p>
+            <div class="input-row"><label for="packaging-material">材質</label><select id="packaging-material"><option value="plastic">plastic</option><option value="paper">paper</option><option value="metal">metal</option></select></div>
+            <div class="input-row"><label for="packaging-weight-g">單件包材重量（g）</label><input id="packaging-weight-g" type="number" min="0" step="0.1" value="15"></div>
+            <div class="input-row"><label for="packaging-product-weight-g">單件茶葉重量（g）</label><input id="packaging-product-weight-g" type="number" min="0" step="1" value="150"></div>
+          </details>
+          <div class="btn-row">
+            <button class="btn primary" id="packaging-save-btn">儲存包裝資料</button>
+            <button class="btn" data-wizard-next="distribution">下一步：登記運輸資料</button>
+          </div>
+        </div>
+        <div class="module-card wizard-panel" id="wizard-distribution">
+          <span class="tag">Step 3</span>
+          <strong>登記運輸與倉儲</strong>
+          <p class="hint">請輸入這批茶從哪裡送到哪裡、距離多遠、用什麼車運送。補完後即可計算產品端碳排。</p>
+          <div class="input-row"><label for="distribution-packaging-id">這筆運輸接的是哪一筆包裝資料？</label><select id="distribution-packaging-id"></select></div>
+          <div class="input-row"><label for="distribution-from">起點</label><input id="distribution-from" type="text" value="茶廠"></div>
+          <div class="input-row"><label for="distribution-to">終點</label><input id="distribution-to" type="text" value="通路"></div>
+          <div class="input-row"><label for="distribution-distance">距離（km）</label><input id="distribution-distance" type="number" min="0" step="0.1" value="35"></div>
+          <details class="advanced-box">
+            <summary>進階欄位</summary>
+            <p class="hint">進階資料可補上運輸重量、車種與倉儲用電，讓運輸與倉儲碳排結果更完整。</p>
+            <div class="input-row"><label for="distribution-weight">重量（kg）</label><input id="distribution-weight" type="number" min="0" step="0.1" value="20"></div>
+            <div class="input-row"><label for="distribution-vehicle">運具</label><select id="distribution-vehicle"><option value="小貨車">小貨車</option><option value="卡車">卡車</option><option value="機車">機車</option></select></div>
+            <div class="input-row"><label for="distribution-storage-kwh">倉儲用電（kWh）</label><input id="distribution-storage-kwh" type="number" min="0" step="0.1" value="18"></div>
+          </details>
+          <div class="btn-row">
+            <button class="btn primary" id="distribution-save-btn">儲存運輸資料</button>
+            <button class="btn" data-open-file="" data-open-hash="footprint" id="wizard-finish-btn">下一步：查看這批茶碳排</button>
+          </div>
+        </div>
       </div>
     </div>
     <div class="grid-3" style="margin-top:18px;">
@@ -751,6 +828,14 @@
     var path = (window.location.pathname || "").toLowerCase();
     return path.indexOf("/downloads/") >= 0 || path.indexOf("\\downloads\\") >= 0 ? "tea_n2o_tool_3.html" : "index.html";
   }
+  function setWizardStep(step) {
+    document.querySelectorAll(".wizard-step-btn").forEach(function(btn) {
+      btn.classList.toggle("active", btn.dataset.wizardStep === step);
+    });
+    document.querySelectorAll(".wizard-panel").forEach(function(panel) {
+      panel.classList.toggle("active", panel.id === "wizard-" + step);
+    });
+  }
   function showPage(name) {
     document.querySelectorAll(".page").forEach(function(page) {
       page.classList.toggle("active", page.id === "page-" + name);
@@ -777,6 +862,16 @@
       var target = btn.dataset.openFile || "tea_n2o_tool_3.html";
       var hash = btn.dataset.openHash ? ("#" + btn.dataset.openHash) : "";
       window.location.href = target + hash;
+    });
+  });
+  document.querySelectorAll(".wizard-step-btn").forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      setWizardStep(btn.dataset.wizardStep);
+    });
+  });
+  document.querySelectorAll("[data-wizard-next]").forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      setWizardStep(btn.dataset.wizardNext);
     });
   });
 
@@ -1134,6 +1229,7 @@
     });
     write(STORAGE.processing, list);
     renderAll();
+    setWizardStep("packaging");
   });
 
   document.getElementById("packaging-save-btn").addEventListener("click", function() {
@@ -1151,6 +1247,7 @@
     });
     write(STORAGE.packaging, list);
     renderAll();
+    setWizardStep("distribution");
   });
 
   document.getElementById("distribution-save-btn").addEventListener("click", function() {
@@ -1169,6 +1266,10 @@
     });
     write(STORAGE.distribution, list);
     renderAll();
+    showPage("footprint");
+  });
+  document.getElementById("wizard-finish-btn").addEventListener("click", function() {
+    showPage("footprint");
   });
 
   document.getElementById("export-exact-btn").addEventListener("click", function() {
@@ -1192,6 +1293,7 @@
 
   document.getElementById("harvest-date").value = new Date().toISOString().slice(0, 10);
   renderAll();
+  setWizardStep("processing");
   var initialPage = (window.location.hash || "").replace("#", "");
   if (initialPage && document.getElementById("page-" + initialPage)) {
     showPage(initialPage);

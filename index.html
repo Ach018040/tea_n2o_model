@@ -711,6 +711,47 @@
     gap: 10px;
     margin-top: 18px;
   }
+  .subtabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 18px 0;
+  }
+  .subtab-btn {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.8);
+    color: var(--muted);
+    padding: 9px 14px;
+    cursor: pointer;
+  }
+  .subtab-btn.active {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #fff;
+  }
+  .subtab-panel {
+    display: none;
+  }
+  .subtab-panel.active {
+    display: block;
+    animation: pageIn 0.2s ease both;
+  }
+  .advanced-box {
+    margin-top: 16px;
+    border: 1px dashed var(--line);
+    border-radius: 16px;
+    background: rgba(255,255,255,0.55);
+    padding: 14px;
+  }
+  .advanced-box summary {
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .advanced-box[open] summary {
+    margin-bottom: 12px;
+  }
   .intent-switch {
     display: flex;
     gap: 10px;
@@ -971,7 +1012,13 @@
       <button class="btn primary" data-page-jump="reports">下載成果報表</button>
       <button class="btn" data-page-jump="decision" data-apply-intent="record">新增施肥紀錄</button>
     </div>
-    <div class="panel" style="margin-top:18px;">
+    <div class="subtabs" aria-label="成果中心分頁">
+      <button class="subtab-btn active" data-results-tab="quarterly">本季檢查</button>
+      <button class="subtab-btn" data-results-tab="annual">年度成果</button>
+      <button class="subtab-btn" data-results-tab="valuechain">價值鏈成果</button>
+    </div>
+    <div class="subtab-panel active" id="results-quarterly">
+      <div class="panel" style="margin-top:18px;">
       <h3>本季資料檢查</h3>
       <p class="hint">檢查這一季的施肥紀錄有沒有漏填、是否有紅燈事件，以及哪些資料需要補充。完成本季檢查後，年度成果會更完整。</p>
       <div class="input-row">
@@ -1009,9 +1056,24 @@
         <div id="quarter-review-list" class="empty-state">目前沒有待補或異常事件。</div>
       </div>
     </div>
-    <div class="panel" style="margin-top:18px;">
-      <h3>今年施肥明細</h3>
-      <div id="annual-record-table" class="empty-state">尚未有年度資料可彙整。</div>
+    </div>
+    <div class="subtab-panel" id="results-annual">
+      <div class="panel" style="margin-top:18px;">
+        <h3>今年施肥明細</h3>
+        <p class="hint">這裡整理今年施肥次數、施氮量、高風險紀錄與估算碳排，方便做年度管理與輔導回顧。</p>
+        <div id="annual-record-table" class="empty-state">尚未有年度資料可彙整。</div>
+      </div>
+    </div>
+    <div class="subtab-panel" id="results-valuechain">
+      <div class="panel" style="margin-top:18px;">
+        <h3>價值鏈成果</h3>
+        <p class="hint">這裡會帶你查看加工、包裝、運輸與產品碳足跡結果。若要往研究或盤查整理，可再下載 EX-ACT / EX-ACT VC 模板。</p>
+        <div class="page-tools">
+          <button class="btn primary" data-open-file="teacarbon_value_chain.html" data-open-hash="footprint">查看產品碳足跡</button>
+          <button class="btn" data-open-file="teacarbon_value_chain.html" data-open-hash="chain">查看批次進度</button>
+          <button class="btn" data-open-file="teacarbon_value_chain.html" data-open-hash="bridge">下載盤查模板</button>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -1111,25 +1173,29 @@
           <label for="decision-rain">近 3 天雨量</label>
           <input type="number" id="decision-rain" min="0" step="1" value="8" readonly>
         </div>
-        <div class="input-row">
-          <label for="apply-temp">氣溫（°C）</label>
-          <input type="number" id="apply-temp" min="0" step="0.1" value="18">
-        </div>
-        <div class="input-row">
-          <label for="apply-humidity">濕度（%）</label>
-          <input type="number" id="apply-humidity" min="0" max="100" step="1" value="82">
-        </div>
-        <div class="input-row">
-          <label for="apply-note">備註</label>
-          <input type="text" id="apply-note" placeholder="例如：雨後補施、分次施用">
-        </div>
-        <div class="input-row">
-          <label for="apply-evidence">是否已留佐證</label>
-          <select id="apply-evidence">
-            <option value="yes">有，已留照片或購買紀錄</option>
-            <option value="no">尚未</option>
-          </select>
-        </div>
+        <details class="advanced-box">
+          <summary>進階欄位</summary>
+          <p class="hint">進階資料可提升估算精準度。如果目前不知道，可以先略過，之後在本季資料檢查時補充。</p>
+          <div class="input-row">
+            <label for="apply-temp">氣溫（°C）</label>
+            <input type="number" id="apply-temp" min="0" step="0.1" value="18">
+          </div>
+          <div class="input-row">
+            <label for="apply-humidity">濕度（%）</label>
+            <input type="number" id="apply-humidity" min="0" max="100" step="1" value="82">
+          </div>
+          <div class="input-row">
+            <label for="apply-note">備註</label>
+            <input type="text" id="apply-note" placeholder="例如：雨後補施、分次施用">
+          </div>
+          <div class="input-row">
+            <label for="apply-evidence">是否已留佐證</label>
+            <select id="apply-evidence">
+              <option value="yes">有，已留照片或購買紀錄</option>
+              <option value="no">尚未</option>
+            </select>
+          </div>
+        </details>
         <div class="page-tools">
           <button class="btn primary" id="apply-check-btn">立即判斷</button>
           <button class="btn" id="apply-reuse-btn">沿用上次紀錄</button>
@@ -1633,6 +1699,17 @@
     btn.addEventListener("click", function() {
       currentRole = btn.dataset.role;
       renderRoleSpotlight();
+    });
+  });
+  document.querySelectorAll("[data-results-tab]").forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      var tab = btn.dataset.resultsTab;
+      document.querySelectorAll("[data-results-tab]").forEach(function(item) {
+        item.classList.toggle("active", item.dataset.resultsTab === tab);
+      });
+      document.querySelectorAll(".subtab-panel").forEach(function(panel) {
+        panel.classList.toggle("active", panel.id === "results-" + tab);
+      });
     });
   });
 
