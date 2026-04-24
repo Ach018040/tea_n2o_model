@@ -693,6 +693,44 @@
     flex-wrap: wrap;
     margin-top: 18px;
   }
+  .review-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 18px;
+  }
+  .checklist {
+    display: grid;
+    gap: 10px;
+  }
+  .check-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #fff;
+  }
+  .check-state {
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 4px 10px;
+    white-space: nowrap;
+  }
+  .check-state.pass {
+    background: var(--green-bg);
+    color: #40661d;
+  }
+  .check-state.fix {
+    background: var(--amber-bg);
+    color: #8a5c0b;
+  }
+  .check-state.miss {
+    background: var(--red-bg);
+    color: #8a2f2b;
+  }
   @media (max-width: 760px) {
     .nav {
       align-items: flex-start;
@@ -714,6 +752,7 @@
     .role-grid,
     .kpi-grid,
     .dual-grid,
+    .review-grid,
     .record-row,
     .summary-grid {
       grid-template-columns: 1fr;
@@ -849,6 +888,43 @@
       <button class="btn" data-page-jump="decision" data-apply-intent="record">新增施肥紀錄</button>
     </div>
     <div class="panel" style="margin-top:18px;">
+      <h3>本季檢查</h3>
+      <div class="input-row">
+        <label for="review-quarter">選擇季度</label>
+        <div class="unit-row">
+          <select id="review-year">
+            <option value="2026" selected>2026</option>
+          </select>
+          <select id="review-quarter">
+            <option value="Q1">Q1</option>
+            <option value="Q2">Q2</option>
+            <option value="Q3">Q3</option>
+            <option value="Q4">Q4</option>
+          </select>
+        </div>
+      </div>
+      <div class="kpi-grid" style="margin-top:14px;">
+        <div class="metric-card"><div class="summary-label">本季施肥次數</div><div class="summary-value" id="quarter-event-count">0</div></div>
+        <div class="metric-card"><div class="summary-label">本季施氮量</div><div class="summary-value" id="quarter-n-total">0.0</div><div class="hint">kg N/ha</div></div>
+        <div class="metric-card"><div class="summary-label">紅燈事件</div><div class="summary-value" id="quarter-high-risk">0</div></div>
+        <div class="metric-card"><div class="summary-label">本季 CO2e</div><div class="summary-value" id="quarter-co2e-total">0.0</div><div class="hint">kg CO2e/ha</div></div>
+      </div>
+      <div class="review-grid">
+        <div>
+          <h3>抽查清單</h3>
+          <div class="checklist" id="quarter-checklist"></div>
+        </div>
+        <div>
+          <h3>本季改善建議</h3>
+          <div id="quarter-advice" class="empty-state">選擇季度後會顯示本季改善建議。</div>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:16px; padding:16px;">
+        <h3>待補與異常事件</h3>
+        <div id="quarter-review-list" class="empty-state">目前沒有待補或異常事件。</div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:18px;">
       <h3>年度事件明細</h3>
       <div id="annual-record-table" class="empty-state">尚未有年度資料可彙整。</div>
     </div>
@@ -954,6 +1030,17 @@
         <div class="input-row">
           <label for="apply-humidity">濕度（%）</label>
           <input type="number" id="apply-humidity" min="0" max="100" step="1" value="82">
+        </div>
+        <div class="input-row">
+          <label for="apply-note">備註</label>
+          <input type="text" id="apply-note" placeholder="例如：雨後補施、分次施用">
+        </div>
+        <div class="input-row">
+          <label for="apply-evidence">是否已留佐證</label>
+          <select id="apply-evidence">
+            <option value="yes">有，已留照片或購買紀錄</option>
+            <option value="no">尚未</option>
+          </select>
         </div>
         <div class="page-tools">
           <button class="btn primary" id="apply-check-btn">查看施肥建議</button>
@@ -1509,6 +1596,93 @@
       "<tr><td><b>合計</b></td><td><b>" + formatNumber(totalN, 1) + "</b></td><td>-</td><td><b>" + formatNumber(totalN2ON, 4) + "</b></td><td><b>" + formatNumber(totalCo2e, 2) + "</b></td></tr>" +
       "</tbody></table>";
   }
+  function getQuarterFromDate(dateStr) {
+    var month = Number((dateStr || "").slice(5, 7));
+    if (month >= 1 && month <= 3) return "Q1";
+    if (month >= 4 && month <= 6) return "Q2";
+    if (month >= 7 && month <= 9) return "Q3";
+    return "Q4";
+  }
+  function inferDataQuality(item) {
+    if (item.data_quality) return item.data_quality;
+    if (item.evidence_kept && item.rain3day_mm !== null && item.rain3day_mm !== undefined) return "A";
+    if (!item.evidence_kept && item.rain3day_mm !== null && item.rain3day_mm !== undefined) return "B";
+    if (item.rain3day_mm === null || item.rain3day_mm === undefined) return "C";
+    return "D";
+  }
+  function renderQuarterlyReview() {
+    var year = document.getElementById("review-year").value;
+    var quarter = document.getElementById("review-quarter").value;
+    var events = loadEvents().filter(function(item) {
+      return String(item.year || (item.date || "").slice(0, 4)) === year && (item.quarter || getQuarterFromDate(item.date)) === quarter;
+    });
+    var totalN = 0;
+    var totalCo2e = 0;
+    var highRisk = 0;
+    var mediumRisk = 0;
+    var greenRisk = 0;
+    var missingRain = 0;
+    var missingEvidence = 0;
+    var highRiskNoNote = 0;
+    var reviewItems = [];
+    events.forEach(function(item) {
+      totalN += item.n_kg_ha || 0;
+      totalCo2e += item.co2e_kg_ha || 0;
+      if (item.risk_level === 3) highRisk += 1;
+      else if (item.risk_level === 2) mediumRisk += 1;
+      else greenRisk += 1;
+      if (item.rain3day_mm === null || item.rain3day_mm === undefined || item.rain3day_mm === "") missingRain += 1;
+      if (!item.evidence_kept) missingEvidence += 1;
+      if (item.risk_level === 3 && !item.note) highRiskNoNote += 1;
+      if (item.risk_level === 3 || !item.evidence_kept || !item.note || (item.rain3day_mm === null || item.rain3day_mm === undefined || item.rain3day_mm === "")) {
+        reviewItems.push(item);
+      }
+    });
+    document.getElementById("quarter-event-count").textContent = String(events.length);
+    document.getElementById("quarter-n-total").textContent = formatNumber(totalN, 1);
+    document.getElementById("quarter-high-risk").textContent = String(highRisk);
+    document.getElementById("quarter-co2e-total").textContent = formatNumber(totalCo2e, 1);
+
+    var checks = [
+      { label: "每次施肥都有日期", ok: events.every(function(item) { return !!item.date; }), missing: !events.length ? false : false },
+      { label: "肥料名稱完整", ok: events.every(function(item) { return !!item.product_name; }), missing: !events.length ? false : false },
+      { label: "用量與面積完整", ok: events.every(function(item) { return item.amount_value > 0 && item.area_ha > 0; }), missing: !events.length ? false : false },
+      { label: "近 3 日雨量完整", ok: missingRain === 0, missing: missingRain > 0 },
+      { label: "高風險事件有備註", ok: highRiskNoNote === 0, missing: highRiskNoNote > 0 },
+      { label: "是否有佐證照片", ok: missingEvidence === 0, missing: missingEvidence > 0 }
+    ];
+    document.getElementById("quarter-checklist").innerHTML = checks.map(function(item) {
+      var state = item.ok ? "pass" : (item.missing ? "miss" : "fix");
+      var text = item.ok ? "通過" : (item.missing ? "待補" : "需檢查");
+      return "<div class='check-item'><span>" + item.label + "</span><span class='check-state " + state + "'>" + text + "</span></div>";
+    }).join("");
+
+    var advice = [];
+    if (highRisk > 0) advice.push("本季有 " + highRisk + " 次紅燈施肥，建議下季避開大雨後 3 日內施肥。");
+    if (events.some(function(item) { return item.n_kg_ha >= 80; })) advice.push("本季有單次施氮量偏高事件，建議改為分次施用。");
+    if (missingRain > 0) advice.push("本季缺少 " + missingRain + " 筆雨量資料，建議補登或串接氣象資料。");
+    if (missingEvidence > 0) advice.push("本季有 " + missingEvidence + " 筆紀錄未留佐證，建議補照片或購買紀錄。");
+    if (!advice.length) advice.push("本季資料完整度良好，可作為年度成果彙整基礎。");
+    document.getElementById("quarter-advice").className = "";
+    document.getElementById("quarter-advice").innerHTML = advice.map(function(text) { return "<p class='hint' style='margin-bottom:8px;'>" + text + "</p>"; }).join("");
+
+    var reviewBox = document.getElementById("quarter-review-list");
+    if (!reviewItems.length) {
+      reviewBox.className = "empty-state";
+      reviewBox.textContent = "目前沒有待補或異常事件。";
+      return;
+    }
+    reviewBox.className = "record-list";
+    reviewBox.innerHTML = reviewItems.map(function(item) {
+      return "<div class='record-row'>" +
+        "<div><b>" + item.date + "</b><div class='hint'>" + item.product_name + "</div></div>" +
+        "<div><span class='risk-pill " + riskClassName(item.risk_level) + "'>" + item.risk_label + "</span></div>" +
+        "<div>品質：" + inferDataQuality(item) + "</div>" +
+        "<div>" + (!item.evidence_kept ? "待補佐證" : "已留佐證") + "</div>" +
+        "<div>" + ((item.rain3day_mm === null || item.rain3day_mm === undefined || item.rain3day_mm === "") ? "待補雨量" : (item.note ? item.note : "建議補備註")) + "</div>" +
+        "</div>";
+    }).join("");
+  }
   function renderRiskEvents() {
     var events = loadEvents().filter(function(item) { return item.risk_level >= 2; }).reverse();
     var box = document.getElementById("risk-event-list");
@@ -1540,6 +1714,7 @@
     renderFarmSummary();
     renderApplyFarmSummary();
     renderAnnualSummary();
+    renderQuarterlyReview();
     renderRiskEvents();
   }
 
@@ -1652,6 +1827,8 @@
     document.getElementById("rain-daybefore").value = String(last.rain3day_mm || 8);
     document.getElementById("apply-temp").value = String(last.temp_c || 18);
     document.getElementById("apply-humidity").value = String(last.humidity_percent || 82);
+    document.getElementById("apply-note").value = last.note || "";
+    document.getElementById("apply-evidence").value = last.evidence_kept ? "yes" : "no";
     updateApplyRain();
     calculateFertilizerN();
   });
@@ -1679,10 +1856,22 @@
     var actionText = risk === 1 ? "可施肥" : risk === 2 ? "先觀察" : "建議延後";
     var productSelect2 = document.getElementById("fertilizer-product");
     var productName = productSelect2.options[productSelect2.selectedIndex].text;
+    var date = document.getElementById("apply-date").value || new Date().toISOString().slice(0, 10);
+    var quarter = getQuarterFromDate(date);
+    var evidenceKept = document.getElementById("apply-evidence").value === "yes";
+    var note = document.getElementById("apply-note").value || "";
     var list = loadEvents();
+    var tempItem = {
+      date: date,
+      rain3day_mm: rain,
+      evidence_kept: evidenceKept
+    };
     list.push({
       id: "evt_" + Date.now(),
-      date: document.getElementById("apply-date").value || new Date().toISOString().slice(0, 10),
+      date: date,
+      year: (date || "").slice(0, 4),
+      quarter: quarter,
+      survey_type: "event",
       product_name: productName,
       amount_value: Number(document.getElementById("fertilizer-amount").value) || 0,
       amount_unit: document.getElementById("fertilizer-unit").value,
@@ -1694,6 +1883,10 @@
       risk_level: risk,
       risk_label: risk === 1 ? "低風險" : risk === 2 ? "中風險" : "高風險",
       action_text: actionText,
+      evidence_kept: evidenceKept,
+      note: note,
+      data_quality: inferDataQuality(tempItem),
+      check_status: (!evidenceKept || !note || risk === 3) ? "needs_fix" : "pass",
       n2o_n_kg_ha: emissions.n2o_n_kg_ha,
       n2o_kg_ha: emissions.n2o_kg_ha,
       co2e_kg_ha: emissions.co2e_kg_ha
@@ -1701,6 +1894,9 @@
     saveEvents(list);
     renderPlatformData();
     showPage("annual");
+  });
+  ["review-year", "review-quarter"].forEach(function(id) {
+    document.getElementById(id).addEventListener("change", renderQuarterlyReview);
   });
   function downloadFile(filename, content, mime) {
     var blob = new Blob([content], { type: mime });
