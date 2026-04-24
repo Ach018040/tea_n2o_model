@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TeaCarbon Value Chain Prototype</title>
+<style>
+  * { box-sizing: border-box; }
+  :root {
+    --ink: #27251f;
+    --muted: #706d62;
+    --line: #ded8ca;
+    --paper: #fbfaf6;
+    --panel: rgba(255,255,255,0.88);
+    --field: #f1eee6;
+    --leaf: #315b2d;
+    --leaf-soft: #e9f1df;
+    --blue: #2e6fd8;
+    --amber: #e59a24;
+    --amber-bg: #fff1d9;
+    --green: #7fb447;
+    --green-bg: #eaf4df;
+    --red: #d95e59;
+    --red-bg: #fde8e6;
+  }
+  body {
+    margin: 0;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at top left, rgba(127, 180, 71, 0.18), transparent 34rem),
+      linear-gradient(180deg, #fffefb 0%, var(--paper) 44%, #f4f0e7 100%);
+    font-family: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.65;
+  }
+  .shell {
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+  }
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(18px);
+    background: rgba(251, 250, 246, 0.9);
+    border-bottom: 1px solid rgba(222, 216, 202, 0.8);
+  }
+  .nav {
+    min-height: 72px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+  }
+  .brand {
+    font-weight: 800;
+    letter-spacing: 0.02em;
+  }
+  .brand span {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .nav-links {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .nav-btn,
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+  .nav-btn {
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    padding: 9px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .nav-btn.active,
+  .nav-btn:hover {
+    background: var(--field);
+    color: var(--ink);
+  }
+  main { padding: 34px 0 56px; }
+  .page { display: none; animation: fadeIn 0.24s ease both; }
+  .page.active { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero {
+    padding: 32px 0 22px;
+  }
+  .eyebrow {
+    color: var(--leaf);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  h1, h2, h3, h4, p { margin-top: 0; }
+  h1 {
+    max-width: 860px;
+    font-size: clamp(38px, 7vw, 72px);
+    line-height: 0.98;
+    letter-spacing: -0.06em;
+    margin: 12px 0 18px;
+  }
+  h2 {
+    font-size: clamp(28px, 4vw, 42px);
+    line-height: 1.08;
+    letter-spacing: -0.04em;
+    margin-bottom: 14px;
+  }
+  h3 {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+  .lead {
+    max-width: 760px;
+    color: var(--muted);
+    font-size: 18px;
+  }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 22px;
+  }
+  .grid-2,
+  .grid-3,
+  .kpi-grid,
+  .module-grid,
+  .flow-grid,
+  .bridge-grid {
+    display: grid;
+    gap: 16px;
+  }
+  .grid-2 { grid-template-columns: 1.1fr 0.9fr; }
+  .grid-3,
+  .module-grid,
+  .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+  .flow-grid { grid-template-columns: repeat(6, 1fr); }
+  .bridge-grid { grid-template-columns: 1fr 1fr; }
+  .hero-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-top: 24px;
+  }
+  .hero-card,
+  .module-card,
+  .flow-card {
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    background: rgba(255,255,255,0.88);
+    padding: 22px;
+  }
+  .hero-card strong,
+  .module-card strong {
+    display: block;
+    font-size: 28px;
+    line-height: 1.08;
+    margin: 10px 0 8px;
+    letter-spacing: -0.04em;
+  }
+  .tag {
+    color: var(--leaf);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .hint {
+    color: var(--muted);
+    font-size: 13px;
+    margin: 8px 0 0;
+  }
+  .input-row {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  label {
+    color: var(--muted);
+    font-size: 14px;
+  }
+  input,
+  select,
+  textarea {
+    width: 100%;
+    border: 1px solid #d4ccba;
+    border-radius: 10px;
+    background: #fff;
+    color: var(--ink);
+    padding: 10px 11px;
+  }
+  textarea { min-height: 90px; resize: vertical; }
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: 2px solid rgba(46, 111, 216, 0.28);
+    border-color: var(--blue);
+  }
+  .unit-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .btn-row,
+  .page-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .btn {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fff;
+    padding: 10px 14px;
+    cursor: pointer;
+  }
+  .btn.primary {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: #fff;
+  }
+  .btn.soft {
+    background: var(--field);
+  }
+  .kpi-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 16px;
+  }
+  .summary-label {
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .summary-value {
+    margin-top: 4px;
+    font-size: 30px;
+    font-weight: 800;
+  }
+  .pill-list {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .pill {
+    background: var(--field);
+    border-radius: 999px;
+    padding: 6px 10px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .table-wrap {
+    overflow-x: auto;
+    margin-top: 16px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  th {
+    color: var(--muted);
+    font-weight: 700;
+  }
+  .empty-state {
+    color: var(--muted);
+    padding: 18px;
+    border: 1px dashed var(--line);
+    border-radius: 16px;
+    background: rgba(255,255,255,0.55);
+  }
+  .record-list {
+    display: grid;
+    gap: 12px;
+  }
+  .record-row {
+    display: grid;
+    grid-template-columns: 1.1fr 0.8fr 0.8fr 0.9fr 1fr;
+    gap: 10px;
+    align-items: center;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 14px;
+  }
+  .flow-card {
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .flow-no {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--leaf);
+    color: #fff;
+    font-weight: 800;
+  }
+  .bridge-card {
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: #fff;
+    padding: 18px;
+  }
+  .footer-note {
+    margin-top: 28px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  @media (max-width: 900px) {
+    .grid-2,
+    .grid-3,
+    .kpi-grid,
+    .module-grid,
+    .bridge-grid,
+    .hero-cards,
+    .flow-grid,
+    .record-row {
+      grid-template-columns: 1fr;
+    }
+    .input-row {
+      grid-template-columns: 1fr;
+    }
+    .nav {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 12px 0;
+    }
+    .nav-links {
+      justify-content: flex-start;
+    }
+    h1 {
+      font-size: 44px;
+    }
+  }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="shell nav">
+    <div class="brand">TeaCarbon VC<span>茶葉價值鏈碳管理平台原型</span></div>
+    <nav class="nav-links" aria-label="主要導覽">
+      <button class="nav-btn active" data-page="home">首頁</button>
+      <button class="nav-btn" data-page="farm">茶園端</button>
+      <button class="nav-btn" data-page="chain">價值鏈端</button>
+      <button class="nav-btn" data-page="bridge">EX-ACT Bridge</button>
+      <button class="nav-btn" data-page="footprint">產品碳足跡</button>
+    </nav>
+  </div>
+</header>
+
+<main class="shell">
+  <section class="page active" id="page-home">
+    <div class="hero">
+      <div class="eyebrow">TeaCarbon VC</div>
+      <h1>把茶園事件資料，延伸到採收、加工、包裝、運輸與價值鏈碳足跡。</h1>
+      <p class="lead">這份新原型承接既有 TeaCarbon 茶農版，往 EX-ACT 與 EX-ACT VC 的資料邏輯升級，讓平台不只管理施肥與季度檢查，也能往茶菁、生產、加工、包裝、物流與產品批次追溯前進。</p>
+    </div>
+    <div class="hero-cards">
+      <div class="hero-card">
+        <span class="tag">第一層</span>
+        <strong>茶農日常管理</strong>
+        <p>保留施肥、雨量、採收與事件紀錄，作為所有價值鏈資料的來源。</p>
+      </div>
+      <div class="hero-card">
+        <span class="tag">第二層</span>
+        <strong>季度檢查與資料品質</strong>
+        <p>把抽查、補登、資料品質等級與季度彙整接進田間與批次資料。</p>
+      </div>
+      <div class="hero-card">
+        <span class="tag">第三層</span>
+        <strong>EX-ACT / EX-ACT VC</strong>
+        <p>將茶園生產與價值鏈資料轉成可匯出的橋接格式，支撐情境模擬與碳足跡分析。</p>
+      </div>
+    </div>
+    <div class="flow-grid" style="margin-top:18px;">
+      <div class="flow-card"><div class="flow-no">1</div><div><b>茶園 Farm ID</b><p class="hint">既有茶園資料與施肥事件沿用自 TeaCarbon 主版。</p></div></div>
+      <div class="flow-card"><div class="flow-no">2</div><div><b>採收批次</b><p class="hint">將茶園與採收日期、茶菁重量連成 Harvest Batch。</p></div></div>
+      <div class="flow-card"><div class="flow-no">3</div><div><b>加工批次</b><p class="hint">記錄 fresh leaf input、電力、燃料與 made tea output。</p></div></div>
+      <div class="flow-card"><div class="flow-no">4</div><div><b>包裝批次</b><p class="hint">記錄包材重量、數量與產品規格。</p></div></div>
+      <div class="flow-card"><div class="flow-no">5</div><div><b>運輸與倉儲</b><p class="hint">建立 distribution records，補齊下游活動。</p></div></div>
+      <div class="flow-card"><div class="flow-no">6</div><div><b>產品碳足跡</b><p class="hint">輸出 kg CO2e / kg 乾茶、150g 包裝與不同邊界結果。</p></div></div>
+    </div>
+  </section>
+
+  <section class="page" id="page-farm">
+    <div class="hero">
+      <div class="eyebrow">Farm Layer</div>
+      <h2>茶園端與採收起點</h2>
+      <p class="lead">TeaCarbon VC 的起點不是加工廠，而是既有的茶園事件資料。這裡用 Farm ID 與 Harvest Batch 把田間管理接到後續價值鏈。</p>
+    </div>
+    <div class="grid-2">
+      <div class="panel">
+        <h3>既有茶園資料</h3>
+        <div id="farm-source-summary" class="empty-state">尚未在主版 TeaCarbon 建立茶園資料。</div>
+        <div class="pill-list">
+          <span class="pill">施肥事件</span>
+          <span class="pill">季度檢查</span>
+          <span class="pill">資料品質</span>
+          <span class="pill">年度成果</span>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Harvest Batch 建立</h3>
+        <div class="input-row"><label for="harvest-date">採收日期</label><input id="harvest-date" type="date"></div>
+        <div class="input-row"><label for="harvest-farm-id">來源茶園</label><input id="harvest-farm-id" type="text" placeholder="自動帶入 Farm ID"></div>
+        <div class="input-row"><label for="harvest-fresh-kg">茶菁重量（kg）</label><input id="harvest-fresh-kg" type="number" min="0" step="0.1" value="120"></div>
+        <div class="input-row"><label for="harvest-method">採收方式</label><select id="harvest-method"><option value="手採">手採</option><option value="機採">機採</option></select></div>
+        <div class="input-row"><label for="harvest-distance">運至茶廠距離（km）</label><input id="harvest-distance" type="number" min="0" step="0.1" value="5"></div>
+        <div class="input-row"><label for="harvest-vehicle">運輸工具</label><select id="harvest-vehicle"><option value="機車">機車</option><option value="小貨車">小貨車</option><option value="卡車">卡車</option></select></div>
+        <div class="input-row"><label for="harvest-loss-rate">採收到加工前損耗率（%）</label><input id="harvest-loss-rate" type="number" min="0" step="0.1" value="3"></div>
+        <div class="btn-row">
+          <button class="btn primary" id="harvest-save-btn">建立採收批次</button>
+        </div>
+      </div>
+    </div>
+    <div class="panel table-wrap" style="margin-top:18px;">
+      <h3>採收批次清單</h3>
+      <div id="harvest-list" class="empty-state">尚未建立採收批次。</div>
+    </div>
+  </section>
+
+  <section class="page" id="page-chain">
+    <div class="hero">
+      <div class="eyebrow">Value Chain Layer</div>
+      <h2>加工、包裝、運輸與批次追溯</h2>
+      <p class="lead">用批次 ID 把茶菁、乾茶、包裝與物流串起來，形成 Value Chain Carbon Footprint 的最小資料骨架。</p>
+    </div>
+    <div class="module-grid">
+      <div class="module-card">
+        <span class="tag">Processing Batch</span>
+        <strong>加工紀錄</strong>
+        <div class="input-row"><label for="processing-harvest-id">來源採收批次</label><select id="processing-harvest-id"></select></div>
+        <div class="input-row"><label for="processing-tea-type">茶類</label><select id="processing-tea-type"><option value="烏龍茶">烏龍茶</option><option value="綠茶">綠茶</option><option value="紅茶">紅茶</option></select></div>
+        <div class="input-row"><label for="processing-electricity">用電（kWh）</label><input id="processing-electricity" type="number" min="0" step="0.1" value="45"></div>
+        <div class="input-row"><label for="processing-fuel-type">燃料類型</label><select id="processing-fuel-type"><option value="LPG">LPG</option><option value="柴油">柴油</option><option value="天然氣">天然氣</option><option value="木材">木材</option></select></div>
+        <div class="input-row"><label for="processing-fuel-amount">燃料用量</label><input id="processing-fuel-amount" type="number" min="0" step="0.1" value="12"></div>
+        <div class="input-row"><label for="processing-output">乾茶產出（kg）</label><input id="processing-output" type="number" min="0" step="0.1" value="28"></div>
+        <div class="btn-row"><button class="btn primary" id="processing-save-btn">建立加工批次</button></div>
+      </div>
+      <div class="module-card">
+        <span class="tag">Packaging Batch</span>
+        <strong>包裝紀錄</strong>
+        <div class="input-row"><label for="packaging-processing-id">來源加工批次</label><select id="packaging-processing-id"></select></div>
+        <div class="input-row"><label for="packaging-type">包材類型</label><select id="packaging-type"><option value="真空袋">真空袋</option><option value="鋁箔袋">鋁箔袋</option><option value="紙盒">紙盒</option><option value="鐵罐">鐵罐</option><option value="禮盒">禮盒</option></select></div>
+        <div class="input-row"><label for="packaging-material">材質</label><select id="packaging-material"><option value="plastic">plastic</option><option value="paper">paper</option><option value="metal">metal</option></select></div>
+        <div class="input-row"><label for="packaging-weight-g">單件包材重量（g）</label><input id="packaging-weight-g" type="number" min="0" step="0.1" value="15"></div>
+        <div class="input-row"><label for="packaging-quantity">數量</label><input id="packaging-quantity" type="number" min="0" step="1" value="40"></div>
+        <div class="input-row"><label for="packaging-product-weight-g">單件茶葉重量（g）</label><input id="packaging-product-weight-g" type="number" min="0" step="1" value="150"></div>
+        <div class="btn-row"><button class="btn primary" id="packaging-save-btn">建立包裝批次</button></div>
+      </div>
+      <div class="module-card">
+        <span class="tag">Distribution</span>
+        <strong>運輸與銷售</strong>
+        <div class="input-row"><label for="distribution-packaging-id">來源包裝批次</label><select id="distribution-packaging-id"></select></div>
+        <div class="input-row"><label for="distribution-from">起點</label><input id="distribution-from" type="text" value="茶廠"></div>
+        <div class="input-row"><label for="distribution-to">終點</label><input id="distribution-to" type="text" value="通路"></div>
+        <div class="input-row"><label for="distribution-distance">距離（km）</label><input id="distribution-distance" type="number" min="0" step="0.1" value="35"></div>
+        <div class="input-row"><label for="distribution-weight">重量（kg）</label><input id="distribution-weight" type="number" min="0" step="0.1" value="20"></div>
+        <div class="input-row"><label for="distribution-vehicle">運具</label><select id="distribution-vehicle"><option value="小貨車">小貨車</option><option value="卡車">卡車</option><option value="機車">機車</option></select></div>
+        <div class="input-row"><label for="distribution-storage-kwh">倉儲用電（kWh）</label><input id="distribution-storage-kwh" type="number" min="0" step="0.1" value="18"></div>
+        <div class="btn-row"><button class="btn primary" id="distribution-save-btn">建立物流紀錄</button></div>
+      </div>
+    </div>
+    <div class="grid-3" style="margin-top:18px;">
+      <div class="panel table-wrap"><h3>加工批次</h3><div id="processing-list" class="empty-state">尚未建立加工批次。</div></div>
+      <div class="panel table-wrap"><h3>包裝批次</h3><div id="packaging-list" class="empty-state">尚未建立包裝批次。</div></div>
+      <div class="panel table-wrap"><h3>運輸與銷售</h3><div id="distribution-list" class="empty-state">尚未建立物流紀錄。</div></div>
+    </div>
+  </section>
+
+  <section class="page" id="page-bridge">
+    <div class="hero">
+      <div class="eyebrow">Bridge Layer</div>
+      <h2>EX-ACT / EX-ACT VC Bridge</h2>
+      <p class="lead">TeaCarbon 不直接取代 EX-ACT 或 EX-ACT VC，而是把前端事件與批次資料整理成可轉換、可匯出、可比較 current scenario 與 planned scenario 的橋接資料。</p>
+    </div>
+    <div class="bridge-grid">
+      <div class="bridge-card">
+        <h3>EX-ACT 應負責的範圍</h3>
+        <div class="pill-list">
+          <span class="pill">茶園土地</span>
+          <span class="pill">土壤碳</span>
+          <span class="pill">施肥 N 投入</span>
+          <span class="pill">茶菁生產</span>
+        </div>
+        <p class="hint">TeaCarbon 現有的茶園資料、施肥事件、季度檢查與資料品質，可整理成 EX-ACT 所需的土地、作物、肥料、土壤管理與 N2O 輸入資料。</p>
+      </div>
+      <div class="bridge-card">
+        <h3>EX-ACT VC 應負責的範圍</h3>
+        <div class="pill-list">
+          <span class="pill">加工</span>
+          <span class="pill">包裝</span>
+          <span class="pill">儲存</span>
+          <span class="pill">運輸</span>
+          <span class="pill">通路</span>
+        </div>
+        <p class="hint">Harvest Batch、Processing Batch、Packaging Batch、Distribution Record 與 Product SKU 可整理成 EX-ACT VC 的 farm-gate-to-shelf 價值鏈資料。</p>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:18px;">
+      <h3>TeaCarbon × EX-ACT 對照</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>價值鏈階段</th>
+            <th>TeaCarbon 資料</th>
+            <th>EX-ACT</th>
+            <th>EX-ACT VC</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>茶園土地與施肥</td><td>Farm、fertilizer events、季度檢查</td><td>主方法框架</td><td>可匯入結果</td></tr>
+          <tr><td>採收與茶菁</td><td>Harvest Batch、fresh leaf kg</td><td>部分</td><td>主方法框架</td></tr>
+          <tr><td>加工</td><td>electricity、fuel、made tea output</td><td>不處理</td><td>主方法框架</td></tr>
+          <tr><td>包裝與儲存</td><td>package type、material、weight、storage kWh</td><td>不處理</td><td>主方法框架</td></tr>
+          <tr><td>運輸與銷售</td><td>distance、vehicle、weight、distribution</td><td>不處理</td><td>主方法框架</td></tr>
+        </tbody>
+      </table>
+      <div class="page-tools">
+        <button class="btn primary" id="export-exact-btn">匯出 EX-ACT Bridge JSON</button>
+        <button class="btn" id="export-vc-btn">匯出 EX-ACT VC Bridge JSON</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" id="page-footprint">
+    <div class="hero">
+      <div class="eyebrow">Footprint Layer</div>
+      <h2>產品碳足跡結果</h2>
+      <p class="lead">這裡用原型係數把茶園端、加工、包裝、運輸與倉儲排放加總，做出可討論的價值鏈結果。正式版可再替換成更完整的 EX-ACT / EX-ACT VC 係數與邊界。</p>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="summary-label">Boundary A</div><div class="summary-value" id="fp-farm">0.00</div><div class="hint">kg CO2e / kg 茶菁</div></div>
+      <div class="kpi-card"><div class="summary-label">Boundary B</div><div class="summary-value" id="fp-factory">0.00</div><div class="hint">kg CO2e / kg 乾茶</div></div>
+      <div class="kpi-card"><div class="summary-label">Boundary C</div><div class="summary-value" id="fp-shelf">0.00</div><div class="hint">kg CO2e / 150g 包裝</div></div>
+    </div>
+    <div class="panel" style="margin-top:18px;">
+      <h3>價值鏈分段結果</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>階段</th>
+            <th>結果</th>
+            <th>說明</th>
+          </tr>
+        </thead>
+        <tbody id="footprint-table-body">
+          <tr><td colspan="3">尚未建立完整價值鏈資料。</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <p class="footer-note">TeaCarbon VC Prototype｜在既有 TeaCarbon 架構上新增 Harvest / Processing / Packaging / Distribution / EX-ACT Bridge｜版本 v0.1</p>
+</main>
+
+<script>
+(function() {
+  var STORAGE = {
+    farm: "teacarbon_farm_v1",
+    events: "teacarbon_events_v1",
+    harvest: "teacarbon_vc_harvest_v1",
+    processing: "teacarbon_vc_processing_v1",
+    packaging: "teacarbon_vc_packaging_v1",
+    distribution: "teacarbon_vc_distribution_v1"
+  };
+  var EMISSION = {
+    electricity: 0.509,
+    LPG: 3.0,
+    diesel: 2.68,
+    naturalGas: 2.0,
+    wood: 1.8,
+    plastic: 2.7,
+    paper: 1.1,
+    metal: 5.2,
+    smallTruck: 0.18,
+    truck: 0.12,
+    scooter: 0.09,
+    storageElectricity: 0.509
+  };
+
+  function read(key, fallback) {
+    try {
+      return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
+    } catch (err) {
+      return fallback;
+    }
+  }
+  function write(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+  }
+  function formatNumber(value, digits) {
+    return Number(value || 0).toLocaleString("zh-TW", {
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits
+    });
+  }
+  function slug(prefix) {
+    return prefix + "_" + Date.now().toString(36);
+  }
+  function getQuarter(dateStr) {
+    var month = Number((dateStr || "").slice(5, 7));
+    if (month >= 1 && month <= 3) return "Q1";
+    if (month >= 4 && month <= 6) return "Q2";
+    if (month >= 7 && month <= 9) return "Q3";
+    return "Q4";
+  }
+  function showPage(name) {
+    document.querySelectorAll(".page").forEach(function(page) {
+      page.classList.toggle("active", page.id === "page-" + name);
+    });
+    document.querySelectorAll(".nav-btn").forEach(function(btn) {
+      btn.classList.toggle("active", btn.dataset.page === name);
+    });
+    renderAll();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  document.querySelectorAll(".nav-btn").forEach(function(btn) {
+    btn.addEventListener("click", function() { showPage(btn.dataset.page); });
+  });
+
+  function currentFarmSummary() {
+    var farm = read(STORAGE.farm, null);
+    var events = read(STORAGE.events, []);
+    var box = document.getElementById("farm-source-summary");
+    if (!farm) {
+      box.className = "empty-state";
+      box.textContent = "尚未在主版 TeaCarbon 建立茶園資料。";
+      document.getElementById("harvest-farm-id").value = "";
+      return;
+    }
+    var totalN = events.reduce(function(sum, item) { return sum + (item.n_kg_ha || 0); }, 0);
+    box.className = "";
+    box.innerHTML = "<div class='record-list'>" +
+      "<div class='record-row'><div><b>" + farm.name + "</b><div class='hint'>" + farm.location + "</div></div><div>" + formatNumber(farm.area_ha, 2) + " ha</div><div>" + farm.type + "</div><div>事件 " + events.length + " 筆</div><div>年度施氮量 " + formatNumber(totalN, 1) + " kg N/ha</div></div>" +
+      "</div>";
+    document.getElementById("harvest-farm-id").value = farm.name;
+  }
+
+  function renderHarvestList() {
+    var items = read(STORAGE.harvest, []);
+    var box = document.getElementById("harvest-list");
+    if (!items.length) {
+      box.className = "empty-state";
+      box.textContent = "尚未建立採收批次。";
+      return;
+    }
+    box.className = "record-list";
+    box.innerHTML = items.slice().reverse().map(function(item) {
+      return "<div class='record-row'><div><b>" + item.id + "</b><div class='hint'>" + item.harvest_date + "</div></div><div>" + formatNumber(item.fresh_leaf_kg, 1) + " kg 茶菁</div><div>" + item.harvest_method + "</div><div>" + formatNumber(item.distance_km, 1) + " km</div><div>Q" + item.quarter.slice(1) + "</div></div>";
+    }).join("");
+  }
+  function renderProcessingList() {
+    var items = read(STORAGE.processing, []);
+    var box = document.getElementById("processing-list");
+    if (!items.length) {
+      box.className = "empty-state";
+      box.textContent = "尚未建立加工批次。";
+      return;
+    }
+    box.className = "record-list";
+    box.innerHTML = items.slice().reverse().map(function(item) {
+      return "<div class='record-row'><div><b>" + item.id + "</b><div class='hint'>" + item.harvest_batch_id + "</div></div><div>" + item.tea_type + "</div><div>" + formatNumber(item.electricity_kwh, 1) + " kWh</div><div>" + formatNumber(item.fuel_amount, 1) + " " + item.fuel_type + "</div><div>" + formatNumber(item.made_tea_output_kg, 1) + " kg</div></div>";
+    }).join("");
+  }
+  function renderPackagingList() {
+    var items = read(STORAGE.packaging, []);
+    var box = document.getElementById("packaging-list");
+    if (!items.length) {
+      box.className = "empty-state";
+      box.textContent = "尚未建立包裝批次。";
+      return;
+    }
+    box.className = "record-list";
+    box.innerHTML = items.slice().reverse().map(function(item) {
+      return "<div class='record-row'><div><b>" + item.id + "</b><div class='hint'>" + item.processing_batch_id + "</div></div><div>" + item.package_type + "</div><div>" + formatNumber(item.material_weight_g, 1) + " g</div><div>" + item.quantity + " 件</div><div>" + item.product_weight_g + " g / 件</div></div>";
+    }).join("");
+  }
+  function renderDistributionList() {
+    var items = read(STORAGE.distribution, []);
+    var box = document.getElementById("distribution-list");
+    if (!items.length) {
+      box.className = "empty-state";
+      box.textContent = "尚未建立物流紀錄。";
+      return;
+    }
+    box.className = "record-list";
+    box.innerHTML = items.slice().reverse().map(function(item) {
+      return "<div class='record-row'><div><b>" + item.id + "</b><div class='hint'>" + item.packaging_batch_id + "</div></div><div>" + item.from_location + " → " + item.to_location + "</div><div>" + formatNumber(item.distance_km, 1) + " km</div><div>" + item.vehicle_type + "</div><div>" + formatNumber(item.storage_kwh, 1) + " kWh</div></div>";
+    }).join("");
+  }
+
+  function refreshBatchSelects() {
+    var harvest = read(STORAGE.harvest, []);
+    var processing = read(STORAGE.processing, []);
+    var packaging = read(STORAGE.packaging, []);
+
+    var harvestSelect = document.getElementById("processing-harvest-id");
+    harvestSelect.innerHTML = harvest.length ? harvest.map(function(item) {
+      return "<option value='" + item.id + "'>" + item.id + "｜" + item.harvest_date + "｜" + formatNumber(item.fresh_leaf_kg, 1) + " kg</option>";
+    }).join("") : "<option value=''>尚無採收批次</option>";
+
+    var processingSelect = document.getElementById("packaging-processing-id");
+    processingSelect.innerHTML = processing.length ? processing.map(function(item) {
+      return "<option value='" + item.id + "'>" + item.id + "｜" + item.tea_type + "｜" + formatNumber(item.made_tea_output_kg, 1) + " kg</option>";
+    }).join("") : "<option value=''>尚無加工批次</option>";
+
+    var packagingSelect = document.getElementById("distribution-packaging-id");
+    packagingSelect.innerHTML = packaging.length ? packaging.map(function(item) {
+      return "<option value='" + item.id + "'>" + item.id + "｜" + item.package_type + "｜" + item.quantity + " 件</option>";
+    }).join("") : "<option value=''>尚無包裝批次</option>";
+  }
+
+  function vehicleFactor(type) {
+    if (type === "卡車") return EMISSION.truck;
+    if (type === "機車") return EMISSION.scooter;
+    return EMISSION.smallTruck;
+  }
+  function fuelFactor(type) {
+    if (type === "柴油") return EMISSION.diesel;
+    if (type === "天然氣") return EMISSION.naturalGas;
+    if (type === "木材") return EMISSION.wood;
+    return EMISSION.LPG;
+  }
+  function materialFactor(material) {
+    if (material === "paper") return EMISSION.paper;
+    if (material === "metal") return EMISSION.metal;
+    return EMISSION.plastic;
+  }
+
+  function renderFootprint() {
+    var farm = read(STORAGE.farm, null);
+    var events = read(STORAGE.events, []);
+    var harvest = read(STORAGE.harvest, []);
+    var processing = read(STORAGE.processing, []);
+    var packaging = read(STORAGE.packaging, []);
+    var distribution = read(STORAGE.distribution, []);
+    var table = document.getElementById("footprint-table-body");
+
+    if (!harvest.length || !processing.length || !packaging.length) {
+      document.getElementById("fp-farm").textContent = "0.00";
+      document.getElementById("fp-factory").textContent = "0.00";
+      document.getElementById("fp-shelf").textContent = "0.00";
+      table.innerHTML = "<tr><td colspan='3'>尚未建立完整價值鏈資料。</td></tr>";
+      return;
+    }
+
+    var farmEmission = events.reduce(function(sum, item) { return sum + (item.co2e_kg_ha || 0); }, 0);
+    var freshLeaf = harvest.reduce(function(sum, item) { return sum + (item.fresh_leaf_kg || 0); }, 0);
+    var madeTea = processing.reduce(function(sum, item) { return sum + (item.made_tea_output_kg || 0); }, 0);
+    var processingEmission = processing.reduce(function(sum, item) {
+      return sum + (item.electricity_kwh * EMISSION.electricity) + (item.fuel_amount * fuelFactor(item.fuel_type));
+    }, 0);
+    var packagingEmission = packaging.reduce(function(sum, item) {
+      return sum + ((item.material_weight_g / 1000) * item.quantity * materialFactor(item.material));
+    }, 0);
+    var distributionEmission = distribution.reduce(function(sum, item) {
+      return sum + (item.distance_km * item.weight_kg * vehicleFactor(item.vehicle_type) / 100) + (item.storage_kwh * EMISSION.storageElectricity);
+    }, 0);
+    var shelfPackages = packaging.reduce(function(sum, item) { return sum + item.quantity; }, 0);
+    var boundaryA = freshLeaf > 0 ? farmEmission / freshLeaf : 0;
+    var boundaryB = madeTea > 0 ? (farmEmission + processingEmission) / madeTea : 0;
+    var boundaryC = shelfPackages > 0 ? (farmEmission + processingEmission + packagingEmission + distributionEmission) / shelfPackages : 0;
+
+    document.getElementById("fp-farm").textContent = formatNumber(boundaryA, 2);
+    document.getElementById("fp-factory").textContent = formatNumber(boundaryB, 2);
+    document.getElementById("fp-shelf").textContent = formatNumber(boundaryC, 2);
+
+    table.innerHTML =
+      "<tr><td>茶園生產端</td><td>" + formatNumber(farmEmission, 2) + " kg CO2e</td><td>來自既有 TeaCarbon 事件資料的茶園端排放。</td></tr>" +
+      "<tr><td>採收與集貨</td><td>" + formatNumber(harvest.reduce(function(sum, item) { return sum + (item.distance_km * item.fresh_leaf_kg * vehicleFactor(item.vehicle_type) / 100); }, 0), 2) + " kg CO2e</td><td>依採收到茶廠距離與車種估算。</td></tr>" +
+      "<tr><td>製茶加工</td><td>" + formatNumber(processingEmission, 2) + " kg CO2e</td><td>依電力與燃料用量估算。</td></tr>" +
+      "<tr><td>包裝</td><td>" + formatNumber(packagingEmission, 2) + " kg CO2e</td><td>依包材重量、材質與數量估算。</td></tr>" +
+      "<tr><td>運輸與倉儲</td><td>" + formatNumber(distributionEmission, 2) + " kg CO2e</td><td>依距離、重量、車種與倉儲用電估算。</td></tr>" +
+      "<tr><td><b>價值鏈總排放</b></td><td><b>" + formatNumber(farmEmission + processingEmission + packagingEmission + distributionEmission, 2) + " kg CO2e</b></td><td>供價值鏈情境模擬與 Bridge 匯出使用。</td></tr>";
+  }
+
+  function exportBridge(type) {
+    var payload;
+    if (type === "exact") {
+      payload = {
+        module: "TeaCarbon EX-ACT Bridge",
+        farm: read(STORAGE.farm, null),
+        field_events: read(STORAGE.events, []),
+        note: "用於茶園生產端、土地利用、施肥與土壤碳資料轉換"
+      };
+    } else {
+      payload = {
+        module: "TeaCarbon EX-ACT VC Bridge",
+        harvest_batches: read(STORAGE.harvest, []),
+        processing_batches: read(STORAGE.processing, []),
+        packaging_batches: read(STORAGE.packaging, []),
+        distribution_records: read(STORAGE.distribution, []),
+        farm_side: read(STORAGE.events, []),
+        note: "用於 farm gate to shelf 價值鏈資料轉換"
+      };
+    }
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = type === "exact" ? "teacarbon_exact_bridge.json" : "teacarbon_exact_vc_bridge.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function renderAll() {
+    currentFarmSummary();
+    renderHarvestList();
+    renderProcessingList();
+    renderPackagingList();
+    renderDistributionList();
+    refreshBatchSelects();
+    renderFootprint();
+  }
+
+  document.getElementById("harvest-save-btn").addEventListener("click", function() {
+    var list = read(STORAGE.harvest, []);
+    var date = document.getElementById("harvest-date").value || new Date().toISOString().slice(0, 10);
+    list.push({
+      id: slug("HB"),
+      farm_id: document.getElementById("harvest-farm-id").value || "Farm",
+      harvest_date: date,
+      year: date.slice(0, 4),
+      quarter: getQuarter(date),
+      fresh_leaf_kg: Number(document.getElementById("harvest-fresh-kg").value) || 0,
+      harvest_method: document.getElementById("harvest-method").value,
+      distance_km: Number(document.getElementById("harvest-distance").value) || 0,
+      vehicle_type: document.getElementById("harvest-vehicle").value,
+      loss_rate: Number(document.getElementById("harvest-loss-rate").value) || 0
+    });
+    write(STORAGE.harvest, list);
+    renderAll();
+  });
+
+  document.getElementById("processing-save-btn").addEventListener("click", function() {
+    var harvestId = document.getElementById("processing-harvest-id").value;
+    if (!harvestId) return;
+    var list = read(STORAGE.processing, []);
+    list.push({
+      id: slug("PB"),
+      harvest_batch_id: harvestId,
+      tea_type: document.getElementById("processing-tea-type").value,
+      electricity_kwh: Number(document.getElementById("processing-electricity").value) || 0,
+      fuel_type: document.getElementById("processing-fuel-type").value,
+      fuel_amount: Number(document.getElementById("processing-fuel-amount").value) || 0,
+      made_tea_output_kg: Number(document.getElementById("processing-output").value) || 0
+    });
+    write(STORAGE.processing, list);
+    renderAll();
+  });
+
+  document.getElementById("packaging-save-btn").addEventListener("click", function() {
+    var processingId = document.getElementById("packaging-processing-id").value;
+    if (!processingId) return;
+    var list = read(STORAGE.packaging, []);
+    list.push({
+      id: slug("PK"),
+      processing_batch_id: processingId,
+      package_type: document.getElementById("packaging-type").value,
+      material: document.getElementById("packaging-material").value,
+      material_weight_g: Number(document.getElementById("packaging-weight-g").value) || 0,
+      quantity: Number(document.getElementById("packaging-quantity").value) || 0,
+      product_weight_g: Number(document.getElementById("packaging-product-weight-g").value) || 0
+    });
+    write(STORAGE.packaging, list);
+    renderAll();
+  });
+
+  document.getElementById("distribution-save-btn").addEventListener("click", function() {
+    var packagingId = document.getElementById("distribution-packaging-id").value;
+    if (!packagingId) return;
+    var list = read(STORAGE.distribution, []);
+    list.push({
+      id: slug("DR"),
+      packaging_batch_id: packagingId,
+      from_location: document.getElementById("distribution-from").value || "茶廠",
+      to_location: document.getElementById("distribution-to").value || "通路",
+      distance_km: Number(document.getElementById("distribution-distance").value) || 0,
+      weight_kg: Number(document.getElementById("distribution-weight").value) || 0,
+      vehicle_type: document.getElementById("distribution-vehicle").value,
+      storage_kwh: Number(document.getElementById("distribution-storage-kwh").value) || 0
+    });
+    write(STORAGE.distribution, list);
+    renderAll();
+  });
+
+  document.getElementById("export-exact-btn").addEventListener("click", function() {
+    exportBridge("exact");
+  });
+  document.getElementById("export-vc-btn").addEventListener("click", function() {
+    exportBridge("vc");
+  });
+
+  document.getElementById("harvest-date").value = new Date().toISOString().slice(0, 10);
+  renderAll();
+})();
+</script>
+</body>
+</html>
