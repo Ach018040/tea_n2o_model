@@ -1555,6 +1555,9 @@
     if (name === "home" || name === "annual" || name === "risk" || name === "reports" || name === "farm" || name === "decision") {
       renderPlatformData();
     }
+    if (window.location.hash !== "#" + name) {
+      window.location.hash = name;
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -2354,6 +2357,10 @@
   calculateEmission();
   renderPlatformData();
   renderRoleSpotlight();
+  var initialPage = (window.location.hash || "").replace("#", "");
+  if (initialPage && document.getElementById("page-" + initialPage)) {
+    showPage(initialPage);
+  }
 })();
 </script>
 </body>

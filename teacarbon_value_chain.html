@@ -422,8 +422,8 @@
   <div class="shell nav">
     <div class="brand">TeaCarbon<span>茶園與茶葉產品碳管理平台</span></div>
     <nav class="nav-links" aria-label="主要導覽">
-      <button class="nav-btn active" data-page="home">首頁</button>
-      <button class="nav-btn" data-open-file="tea_n2o_tool_3.html" data-open-hash="">茶園管理</button>
+      <button class="nav-btn" data-open-main="home">首頁</button>
+      <button class="nav-btn" data-open-main="decision">茶園管理</button>
       <button class="nav-btn" data-page="chain">製茶加工</button>
       <button class="nav-btn" data-page="footprint">產品物流</button>
       <button class="nav-btn" data-page="bridge">成果報表</button>
@@ -747,6 +747,10 @@
     if (month >= 7 && month <= 9) return "Q3";
     return "Q4";
   }
+  function getMainAppPath() {
+    var path = (window.location.pathname || "").toLowerCase();
+    return path.indexOf("/downloads/") >= 0 || path.indexOf("\\downloads\\") >= 0 ? "tea_n2o_tool_3.html" : "index.html";
+  }
   function showPage(name) {
     document.querySelectorAll(".page").forEach(function(page) {
       page.classList.toggle("active", page.id === "page-" + name);
@@ -764,6 +768,10 @@
     btn.addEventListener("click", function() {
       if (btn.dataset.page) {
         showPage(btn.dataset.page);
+        return;
+      }
+      if (btn.dataset.openMain) {
+        window.location.href = getMainAppPath() + "#" + btn.dataset.openMain;
         return;
       }
       var target = btn.dataset.openFile || "tea_n2o_tool_3.html";
