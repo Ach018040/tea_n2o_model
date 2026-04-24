@@ -325,6 +325,18 @@
     background: #fff;
     padding: 18px;
   }
+  .template-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 18px;
+  }
+  .template-card {
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: #fff;
+    padding: 18px;
+  }
   .footer-note {
     margin-top: 28px;
     color: var(--muted);
@@ -336,6 +348,7 @@
     .kpi-grid,
     .module-grid,
     .bridge-grid,
+    .template-grid,
     .hero-cards,
     .flow-grid,
     .record-row {
@@ -540,9 +553,28 @@
           <tr><td>運輸與銷售</td><td>distance、vehicle、weight、distribution</td><td>不處理</td><td>主方法框架</td></tr>
         </tbody>
       </table>
-      <div class="page-tools">
-        <button class="btn primary" id="export-exact-btn">匯出 EX-ACT Bridge JSON</button>
-        <button class="btn" id="export-vc-btn">匯出 EX-ACT VC Bridge JSON</button>
+      <p class="hint">這裡不只輸出原始 JSON，也可直接下載可開啟於 Excel 的 `.xls` 範本與可整理於試算表的 `.csv` 範本。</p>
+      <div class="template-grid">
+        <div class="template-card">
+          <div class="tag">Tea Farm → EX-ACT</div>
+          <h3>EX-ACT 茶園生產模板</h3>
+          <p class="hint">含茶園基本資料、年度施肥事件彙整、季度資料品質與茶園端排放欄位。</p>
+          <div class="page-tools">
+            <button class="btn primary" id="export-exact-csv-btn">CSV 模板</button>
+            <button class="btn" id="export-exact-xls-btn">Excel 模板 (.xls)</button>
+            <button class="btn soft" id="export-exact-btn">Bridge JSON</button>
+          </div>
+        </div>
+        <div class="template-card">
+          <div class="tag">Factory / Product → EX-ACT VC</div>
+          <h3>EX-ACT VC 價值鏈模板</h3>
+          <p class="hint">含採收批次、加工、包裝、運輸、倉儲與產品邊界欄位，可直接整理 farm-gate-to-shelf 資料。</p>
+          <div class="page-tools">
+            <button class="btn primary" id="export-vc-csv-btn">CSV 模板</button>
+            <button class="btn" id="export-vc-xls-btn">Excel 模板 (.xls)</button>
+            <button class="btn soft" id="export-vc-btn">Bridge JSON</button>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -613,6 +645,37 @@
   function write(key, value) {
     localStorage.setItem(key, JSON.stringify(value));
   }
+  function downloadText(filename, text, mimeType) {
+    var blob = new Blob([text], { type: mimeType + ";charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+  function csvCell(value) {
+    var text = value === null || value === undefined ? "" : String(value);
+    if (/[",\n]/.test(text)) return "\"" + text.replace(/"/g, "\"\"") + "\"";
+    return text;
+  }
+  function rowsToCsv(rows) {
+    return rows.map(function(row) {
+      return row.map(csvCell).join(",");
+    }).join("\r\n");
+  }
+  function rowsToExcelHtml(title, rows) {
+    var header = rows[0] || [];
+    var bodyRows = rows.slice(1).map(function(row) {
+      return "<tr>" + row.map(function(cell) {
+        return "<td>" + String(cell === null || cell === undefined ? "" : cell).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      }).join("</td><td>") + "</td></tr>";
+    }).join("");
+    return "<html><head><meta charset='UTF-8'><title>" + title + "</title></head><body>" +
+      "<table border='1'><thead><tr>" + header.map(function(cell) {
+        return "<th>" + String(cell).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") + "</th>";
+      }).join("") + "</tr></thead><tbody>" + bodyRows + "</tbody></table></body></html>";
+  }
   function formatNumber(value, digits) {
     return Number(value || 0).toLocaleString("zh-TW", {
       minimumFractionDigits: digits,
@@ -637,6 +700,9 @@
       btn.classList.toggle("active", btn.dataset.page === name);
     });
     renderAll();
+    if (window.location.hash !== "#" + name) {
+      window.location.hash = name;
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
   document.querySelectorAll(".nav-btn").forEach(function(btn) {
@@ -799,6 +865,95 @@
       "<tr><td><b>價值鏈總排放</b></td><td><b>" + formatNumber(farmEmission + processingEmission + packagingEmission + distributionEmission, 2) + " kg CO2e</b></td><td>供價值鏈情境模擬與 Bridge 匯出使用。</td></tr>";
   }
 
+  function buildExactTemplateRows() {
+    var farm = read(STORAGE.farm, null) || {};
+    var events = read(STORAGE.events, []);
+    var years = {};
+    events.forEach(function(item) {
+      years[String(item.year || (item.date || "").slice(0, 4) || new Date().getFullYear())] = true;
+    });
+    var yearList = Object.keys(years);
+    var targetYear = yearList[0] || String(new Date().getFullYear());
+    var targetEvents = events.filter(function(item) {
+      return String(item.year || (item.date || "").slice(0, 4) || targetYear) === targetYear;
+    });
+    var totalN = targetEvents.reduce(function(sum, item) { return sum + (item.n_kg_ha || 0); }, 0);
+    var totalN2ON = targetEvents.reduce(function(sum, item) { return sum + (item.n2o_n_kg_ha || 0); }, 0);
+    var totalCo2e = targetEvents.reduce(function(sum, item) { return sum + (item.co2e_kg_ha || 0); }, 0);
+    var highRisk = targetEvents.filter(function(item) { return item.risk_level === 3; }).length;
+    return [
+      ["template_group", "field_code", "field_label", "value", "unit", "source", "note"],
+      ["farm_profile", "farm_name", "茶園名稱", farm.name || "", "", "TeaCarbon Farm", "EX-ACT 茶園端基本資料"],
+      ["farm_profile", "farm_area_ha", "茶園面積", farm.area_ha || "", "ha", "TeaCarbon Farm", ""],
+      ["farm_profile", "farm_location", "茶園位置", farm.location || "", "", "TeaCarbon Farm", ""],
+      ["farm_profile", "cultivation_type", "栽培制度", farm.type || "", "", "TeaCarbon Farm", ""],
+      ["farm_profile", "tea_variety", "茶種", farm.variety || "", "", "TeaCarbon Farm", ""],
+      ["annual_summary", "inventory_year", "盤點年度", targetYear, "", "TeaCarbon Events", ""],
+      ["annual_summary", "fertilizer_event_count", "施肥事件數", targetEvents.length, "count", "TeaCarbon Events", ""],
+      ["annual_summary", "annual_n_input", "年度施氮量", totalN, "kg N/ha", "TeaCarbon Events", ""],
+      ["annual_summary", "annual_n2o_n", "年度 N2O-N", totalN2ON, "kg N2O-N/ha", "TeaCarbon Events", ""],
+      ["annual_summary", "annual_co2e", "年度 CO2e", totalCo2e, "kg CO2e/ha", "TeaCarbon Events", ""],
+      ["annual_summary", "high_risk_count", "高風險事件數", highRisk, "count", "TeaCarbon Events", ""],
+      ["quarter_review", "q1_status", "Q1 資料檢查", "", "", "Quarter Review", "可填 reviewed / pending / locked"],
+      ["quarter_review", "q2_status", "Q2 資料檢查", "", "", "Quarter Review", ""],
+      ["quarter_review", "q3_status", "Q3 資料檢查", "", "", "Quarter Review", ""],
+      ["quarter_review", "q4_status", "Q4 資料檢查", "", "", "Quarter Review", ""],
+      ["quality", "data_quality_score", "資料品質等級", "", "A/B/C/D", "Quarter Review", "A 最完整，D 為回憶填報"],
+      ["quality", "evidence_note", "佐證說明", "", "", "Quarter Review", "可填照片、購買紀錄、補登狀態"]
+    ];
+  }
+
+  function buildVcTemplateRows() {
+    var harvest = read(STORAGE.harvest, []);
+    var processing = read(STORAGE.processing, []);
+    var packaging = read(STORAGE.packaging, []);
+    var distribution = read(STORAGE.distribution, []);
+    var sampleHarvest = harvest[0] || {};
+    var sampleProcessing = processing[0] || {};
+    var samplePackaging = packaging[0] || {};
+    var sampleDistribution = distribution[0] || {};
+    return [
+      ["template_group", "field_code", "field_label", "value", "unit", "source", "note"],
+      ["harvest_batch", "harvest_batch_id", "採收批次 ID", sampleHarvest.id || "", "", "TeaCarbon VC", ""],
+      ["harvest_batch", "farm_id", "來源茶園", sampleHarvest.farm_id || "", "", "TeaCarbon VC", ""],
+      ["harvest_batch", "harvest_date", "採收日期", sampleHarvest.harvest_date || "", "", "TeaCarbon VC", ""],
+      ["harvest_batch", "fresh_leaf_kg", "茶菁重量", sampleHarvest.fresh_leaf_kg || "", "kg", "TeaCarbon VC", ""],
+      ["harvest_batch", "harvest_method", "採收方式", sampleHarvest.harvest_method || "", "", "TeaCarbon VC", ""],
+      ["harvest_batch", "distance_km", "採收到茶廠距離", sampleHarvest.distance_km || "", "km", "TeaCarbon VC", ""],
+      ["processing_batch", "processing_batch_id", "加工批次 ID", sampleProcessing.id || "", "", "TeaCarbon VC", ""],
+      ["processing_batch", "tea_type", "茶類", sampleProcessing.tea_type || "", "", "TeaCarbon VC", ""],
+      ["processing_batch", "electricity_kwh", "加工用電", sampleProcessing.electricity_kwh || "", "kWh", "TeaCarbon VC", ""],
+      ["processing_batch", "fuel_type", "燃料類型", sampleProcessing.fuel_type || "", "", "TeaCarbon VC", ""],
+      ["processing_batch", "fuel_amount", "燃料用量", sampleProcessing.fuel_amount || "", "unit", "TeaCarbon VC", ""],
+      ["processing_batch", "made_tea_output_kg", "乾茶產出", sampleProcessing.made_tea_output_kg || "", "kg", "TeaCarbon VC", ""],
+      ["packaging_batch", "packaging_batch_id", "包裝批次 ID", samplePackaging.id || "", "", "TeaCarbon VC", ""],
+      ["packaging_batch", "package_type", "包裝類型", samplePackaging.package_type || "", "", "TeaCarbon VC", ""],
+      ["packaging_batch", "material", "包材材質", samplePackaging.material || "", "", "TeaCarbon VC", ""],
+      ["packaging_batch", "material_weight_g", "單件包材重量", samplePackaging.material_weight_g || "", "g", "TeaCarbon VC", ""],
+      ["packaging_batch", "quantity", "包裝數量", samplePackaging.quantity || "", "count", "TeaCarbon VC", ""],
+      ["distribution", "distribution_id", "運輸紀錄 ID", sampleDistribution.id || "", "", "TeaCarbon VC", ""],
+      ["distribution", "from_location", "起點", sampleDistribution.from_location || "", "", "TeaCarbon VC", ""],
+      ["distribution", "to_location", "終點", sampleDistribution.to_location || "", "", "TeaCarbon VC", ""],
+      ["distribution", "distance_km", "運輸距離", sampleDistribution.distance_km || "", "km", "TeaCarbon VC", ""],
+      ["distribution", "weight_kg", "運輸重量", sampleDistribution.weight_kg || "", "kg", "TeaCarbon VC", ""],
+      ["distribution", "vehicle_type", "運具", sampleDistribution.vehicle_type || "", "", "TeaCarbon VC", ""],
+      ["distribution", "storage_kwh", "倉儲用電", sampleDistribution.storage_kwh || "", "kWh", "TeaCarbon VC", ""],
+      ["product_result", "boundary", "邊界", "factory_gate / shelf", "", "TeaCarbon VC", "可依產品需求調整"],
+      ["product_result", "functional_unit", "功能單位", "kg made tea / package", "", "TeaCarbon VC", ""]
+    ];
+  }
+
+  function exportTemplate(type, format) {
+    var rows = type === "exact" ? buildExactTemplateRows() : buildVcTemplateRows();
+    var base = type === "exact" ? "teacarbon_exact_template" : "teacarbon_exact_vc_template";
+    var title = type === "exact" ? "TeaCarbon EX-ACT Template" : "TeaCarbon EX-ACT VC Template";
+    if (format === "csv") {
+      downloadText(base + ".csv", rowsToCsv(rows), "text/csv");
+      return;
+    }
+    downloadText(base + ".xls", rowsToExcelHtml(title, rows), "application/vnd.ms-excel");
+  }
+
   function exportBridge(type) {
     var payload;
     if (type === "exact") {
@@ -915,9 +1070,25 @@
   document.getElementById("export-vc-btn").addEventListener("click", function() {
     exportBridge("vc");
   });
+  document.getElementById("export-exact-csv-btn").addEventListener("click", function() {
+    exportTemplate("exact", "csv");
+  });
+  document.getElementById("export-exact-xls-btn").addEventListener("click", function() {
+    exportTemplate("exact", "xls");
+  });
+  document.getElementById("export-vc-csv-btn").addEventListener("click", function() {
+    exportTemplate("vc", "csv");
+  });
+  document.getElementById("export-vc-xls-btn").addEventListener("click", function() {
+    exportTemplate("vc", "xls");
+  });
 
   document.getElementById("harvest-date").value = new Date().toISOString().slice(0, 10);
   renderAll();
+  var initialPage = (window.location.hash || "").replace("#", "");
+  if (initialPage && document.getElementById("page-" + initialPage)) {
+    showPage(initialPage);
+  }
 })();
 </script>
 </body>

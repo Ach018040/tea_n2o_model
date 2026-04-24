@@ -661,6 +661,53 @@
     line-height: 1.1;
     margin: 10px 0 8px;
   }
+  .role-switch {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 18px 0 16px;
+  }
+  .role-btn {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.72);
+    color: var(--muted);
+    padding: 9px 14px;
+    cursor: pointer;
+  }
+  .role-btn.active,
+  .role-btn:hover {
+    background: var(--leaf);
+    border-color: var(--leaf);
+    color: #fff;
+  }
+  .role-spotlight {
+    margin-top: 16px;
+  }
+  .role-meta {
+    color: var(--leaf);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .role-title {
+    font-size: clamp(24px, 3vw, 34px);
+    line-height: 1.1;
+    letter-spacing: -0.04em;
+    margin: 10px 0 8px;
+  }
+  .role-copy {
+    max-width: 760px;
+    color: var(--muted);
+    margin-bottom: 0;
+  }
+  .role-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+  }
   .intent-switch {
     display: flex;
     gap: 10px;
@@ -794,6 +841,20 @@
       <h1>今天想做什麼？</h1>
       <p class="lead">先完成眼前任務，再讓資料自動累積成年度成果。</p>
     </div>
+    <div class="panel role-spotlight">
+      <div class="role-meta">Role Switch</div>
+      <div class="role-switch" aria-label="角色切換">
+        <button class="role-btn active" data-role="farm">Farm</button>
+        <button class="role-btn" data-role="factory">Factory</button>
+        <button class="role-btn" data-role="product">Product</button>
+        <button class="role-btn" data-role="advisory">Advisory</button>
+      </div>
+      <div id="role-spotlight-content">
+        <div class="role-title" id="role-title">Farm｜茶農日常管理</div>
+        <p class="role-copy" id="role-copy">先判斷今天適不適合施肥，再把施肥事件、季度檢查與年度成果慢慢累積起來。這一版優先服務茶農的日常操作。</p>
+        <div class="role-actions" id="role-actions"></div>
+      </div>
+    </div>
     <div class="task-grid">
       <button class="task-card" data-page-jump="decision" data-apply-intent="plan">
         <span class="mode-tag">任務 1</span>
@@ -849,6 +910,18 @@
       <p class="lead">進階功能集中在這裡，避免干擾茶農主要操作路徑。</p>
     </div>
     <div class="task-grid">
+      <button class="task-card" data-open-file="teacarbon_value_chain.html" data-open-hash="home">
+        <span class="mode-tag">價值鏈模式</span>
+        <strong>TeaCarbon VC</strong>
+        <p>從採收、加工、包裝、運輸一路串到產品碳足跡，適合茶廠、品牌與輔導單位。</p>
+        <span class="mode-action">前往價值鏈平台</span>
+      </button>
+      <button class="task-card" data-open-file="teacarbon_value_chain.html" data-open-hash="bridge">
+        <span class="mode-tag">EX-ACT Bridge</span>
+        <strong>EX-ACT／EX-ACT VC 模板</strong>
+        <p>下載可直接整理的 CSV 與 Excel 模板，接到茶園生產端與價值鏈盤點。</p>
+        <span class="mode-action">下載匯出模板</span>
+      </button>
       <button class="task-card" data-page-jump="reports">
         <span class="mode-tag">資料整理</span>
         <strong>資料匯出</strong>
@@ -1417,9 +1490,44 @@
   var emissionRains = [5, 8, 12, 6, 3, 0, 2];
   var lastEventTotalN2ON = 0;
   var applyIntent = "plan";
+  var currentRole = "farm";
   var STORAGE = {
     farm: "teacarbon_farm_v1",
     events: "teacarbon_events_v1"
+  };
+  var ROLE_CONFIG = {
+    farm: {
+      title: "Farm｜茶農日常管理",
+      copy: "先判斷今天適不適合施肥，再把施肥事件、季度檢查與年度成果慢慢累積起來。這一版優先服務茶農的日常操作。",
+      actions: [
+        { label: "開始施肥判斷", page: "decision", intent: "plan", primary: true },
+        { label: "查看年度成果", page: "annual" }
+      ]
+    },
+    factory: {
+      title: "Factory｜加工與能源管理",
+      copy: "把採收批次、加工用電與燃料接起來，看每批茶菁變成乾茶時的碳排變化，適合茶廠或初製加工端。",
+      actions: [
+        { label: "進入價值鏈端", file: "teacarbon_value_chain.html", hash: "chain", primary: true },
+        { label: "看產品碳足跡", file: "teacarbon_value_chain.html", hash: "footprint" }
+      ]
+    },
+    product: {
+      title: "Product｜包裝、物流與商品碳足跡",
+      copy: "把包材、運輸、倉儲與產品批次接起來，從茶園一路走到商品端，適合品牌、通路與產品管理。",
+      actions: [
+        { label: "打開產品碳足跡", file: "teacarbon_value_chain.html", hash: "footprint", primary: true },
+        { label: "查看價值鏈首頁", file: "teacarbon_value_chain.html", hash: "home" }
+      ]
+    },
+    advisory: {
+      title: "Advisory｜輔導、盤查與 Bridge 匯出",
+      copy: "把事件資料、季度檢查、資料品質和價值鏈批次整理成 EX-ACT / EX-ACT VC 所需模板，方便輔導與盤查前置作業。",
+      actions: [
+        { label: "打開 EX-ACT Bridge", file: "teacarbon_value_chain.html", hash: "bridge", primary: true },
+        { label: "查看研究模型", page: "research" }
+      ]
+    }
   };
 
   function showPage(name) {
@@ -1454,6 +1562,49 @@
       showPage(btn.dataset.pageJump);
       if (btn.dataset.applyIntent) setApplyIntent(btn.dataset.applyIntent);
       if (btn.dataset.panelJump) showResearchPanel(btn.dataset.panelJump);
+    });
+  });
+  document.querySelectorAll("[data-open-file]").forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      var target = btn.dataset.openFile || "";
+      var hash = btn.dataset.openHash ? ("#" + btn.dataset.openHash) : "";
+      window.location.href = target + hash;
+    });
+  });
+
+  function renderRoleSpotlight() {
+    var conf = ROLE_CONFIG[currentRole];
+    if (!conf) return;
+    document.querySelectorAll(".role-btn").forEach(function(btn) {
+      btn.classList.toggle("active", btn.dataset.role === currentRole);
+    });
+    document.getElementById("role-title").textContent = conf.title;
+    document.getElementById("role-copy").textContent = conf.copy;
+    var actions = document.getElementById("role-actions");
+    actions.innerHTML = conf.actions.map(function(action) {
+      if (action.file) {
+        return "<button class='btn " + (action.primary ? "primary" : "") + "' data-open-file='" + action.file + "' data-open-hash='" + (action.hash || "") + "'>" + action.label + "</button>";
+      }
+      return "<button class='btn " + (action.primary ? "primary" : "") + "' data-page-jump='" + action.page + "'" + (action.intent ? " data-apply-intent='" + action.intent + "'" : "") + ">" + action.label + "</button>";
+    }).join("");
+    actions.querySelectorAll("[data-page-jump]").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        showPage(btn.dataset.pageJump);
+        if (btn.dataset.applyIntent) setApplyIntent(btn.dataset.applyIntent);
+      });
+    });
+    actions.querySelectorAll("[data-open-file]").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        var target = btn.dataset.openFile || "";
+        var hash = btn.dataset.openHash ? ("#" + btn.dataset.openHash) : "";
+        window.location.href = target + hash;
+      });
+    });
+  }
+  document.querySelectorAll(".role-btn").forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      currentRole = btn.dataset.role;
+      renderRoleSpotlight();
     });
   });
 
@@ -2177,6 +2328,7 @@
   updatePlan();
   calculateEmission();
   renderPlatformData();
+  renderRoleSpotlight();
 })();
 </script>
 </body>
