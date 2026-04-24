@@ -641,6 +641,58 @@
     flex-wrap: wrap;
     margin-top: 14px;
   }
+  .task-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-top: 22px;
+  }
+  .task-card {
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.88);
+    padding: 22px;
+    text-align: left;
+    cursor: pointer;
+  }
+  .task-card strong {
+    display: block;
+    font-size: 26px;
+    line-height: 1.1;
+    margin: 10px 0 8px;
+  }
+  .intent-switch {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .intent-btn {
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 10px 14px;
+    cursor: pointer;
+  }
+  .intent-btn.active {
+    background: var(--leaf);
+    color: #fff;
+    border-color: var(--leaf);
+  }
+  .farm-badge {
+    background: var(--field);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .result-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+  }
   @media (max-width: 760px) {
     .nav {
       align-items: flex-start;
@@ -658,6 +710,7 @@
     .status-strip,
     .research-flow,
     .hero-actions,
+    .task-grid,
     .role-grid,
     .kpi-grid,
     .dual-grid,
@@ -686,15 +739,11 @@
   <div class="shell nav">
     <div class="brand">TeaCarbon<span>茶園低碳施肥與碳排管理平台</span></div>
     <nav class="nav-links" aria-label="主要導覽">
-      <button class="nav-btn active" data-page="home">儀表板</button>
+      <button class="nav-btn active" data-page="home">首頁</button>
+      <button class="nav-btn" data-page="decision">我要施肥</button>
       <button class="nav-btn" data-page="farm">我的茶園</button>
-      <button class="nav-btn" data-page="record">新增施肥紀錄</button>
-      <button class="nav-btn" data-page="decision">今日施肥判斷</button>
-      <button class="nav-btn" data-page="annual">年度碳排</button>
-      <button class="nav-btn" data-page="risk">高風險事件</button>
-      <button class="nav-btn" data-page="reports">報表輸出</button>
-      <button class="nav-btn" data-page="research">研究模型</button>
-      <button class="nav-btn" data-page="model">方法說明</button>
+      <button class="nav-btn" data-page="annual">年度成果</button>
+      <button class="nav-btn" data-page="more">更多</button>
     </nav>
   </div>
 </header>
@@ -703,50 +752,30 @@
   <section class="page active" id="page-home">
     <div class="hero">
       <div class="eyebrow">TeaCarbon Platform</div>
-      <h1>把茶農每天的施肥行為，轉成低碳決策與年度管理資料。</h1>
-      <p class="lead">TeaCarbon 不是單次碳排計算器，而是從茶園建檔、施肥紀錄、雨量風險判斷、N2O 事件估算，一路串到季度與年度碳排管理報表的平台。</p>
+      <h1>今天想做什麼？</h1>
+      <p class="lead">先完成眼前任務，再讓資料自動累積成年度成果。</p>
     </div>
-    <div class="hero-actions">
-      <button class="cta-card" data-page-jump="farm">
-        <span class="mode-tag">Step 1</span>
-        <strong>建立茶園基本資料</strong>
-        <p>先把茶園名稱、面積、位置與栽培型態存起來，後續紀錄才會累積成平台資料。</p>
+    <div class="task-grid">
+      <button class="task-card" data-page-jump="decision" data-apply-intent="plan">
+        <span class="mode-tag">任務 1</span>
+        <strong>我要判斷今天能不能施肥</strong>
+        <p>輸入肥料和近 3 天雨量，馬上看紅黃綠燈。</p>
+        <span class="mode-action">開始判斷</span>
       </button>
-      <button class="cta-card" data-page-jump="record">
-        <span class="mode-tag">Step 2</span>
-        <strong>新增施肥紀錄</strong>
-        <p>輸入肥料、用量、面積、雨量與氣象條件，自動換算施氮量與風險等級。</p>
+      <button class="task-card" data-page-jump="decision" data-apply-intent="record">
+        <span class="mode-tag">任務 2</span>
+        <strong>我要登記一筆施肥紀錄</strong>
+        <p>把今天的肥料、用量和日期存起來，累積年度碳排。</p>
+        <span class="mode-action">新增紀錄</span>
       </button>
-      <button class="cta-card" data-page-jump="annual">
-        <span class="mode-tag">Step 3</span>
-        <strong>查看年度碳排</strong>
-        <p>把事件資料累積成高風險事件、年度 N2O 與 CO2e 管理指標。</p>
+      <button class="task-card" data-page-jump="annual">
+        <span class="mode-tag">任務 3</span>
+        <strong>我要查看今年低碳成果</strong>
+        <p>查看今年施肥次數、高風險事件和估算碳排。</p>
+        <span class="mode-action">查看成果</span>
       </button>
     </div>
-    <div class="role-grid" style="margin-top:18px;">
-      <div class="panel">
-        <h3>茶農模式</h3>
-        <p class="hint">回答最實際的問題：今天適不適合施肥？這次風險高不高？怎麼做比較低碳？</p>
-      </div>
-      <div class="panel">
-        <h3>輔導模式</h3>
-        <p class="hint">彙整多茶園的施肥紀錄、高風險事件、季度與年度碳排，做示範場域與輔導報告。</p>
-      </div>
-      <div class="panel">
-        <h3>研究／盤查輔助模式</h3>
-        <p class="hint">保留 rain_weighted、事件型 N2O 估算、季度整併與方法限制，供研究與盤查附表使用。</p>
-      </div>
-    </div>
-    <div class="timeline">
-      <div class="timeline-step"><div class="timeline-no">1</div><div><b>茶園建檔</b><p class="hint">建立農戶與茶園的基礎資料，成為後續紀錄的主檔。</p></div></div>
-      <div class="timeline-step"><div class="timeline-no">2</div><div><b>施肥紀錄</b><p class="hint">保存日期、肥料、用量與面積，形成可追溯活動數據。</p></div></div>
-      <div class="timeline-step"><div class="timeline-no">3</div><div><b>換算施氮量 kg N/ha</b><p class="hint">把「幾包肥」轉成可用於風險與碳排估算的標準化指標。</p></div></div>
-      <div class="timeline-step"><div class="timeline-no">4</div><div><b>串接或輸入雨量</b><p class="hint">以近 3 日雨量或研究版時序雨量作為風險觸發條件。</p></div></div>
-      <div class="timeline-step"><div class="timeline-no">5</div><div><b>紅黃綠燈風險判斷</b><p class="hint">把施肥時點翻譯成可行動的低碳建議。</p></div></div>
-      <div class="timeline-step"><div class="timeline-no">6</div><div><b>N2O 事件排放估算</b><p class="hint">以事件層級估算 7 天排放，供季度與年度整併。</p></div></div>
-      <div class="timeline-step"><div class="timeline-no">7</div><div><b>季度與年度碳排彙整</b><p class="hint">彙整成 N2O-N、N2O 與 CO2e 管理數據。</p></div></div>
-      <div class="timeline-step"><div class="timeline-no">8</div><div><b>改善建議與低碳管理報表</b><p class="hint">產出年度改善成果、風險事件統計與輔導報表。</p></div></div>
-    </div>
+    <p class="hint" style="margin-top:18px;">進階功能：研究模型、進階計算方法、資料匯出、方法說明</p>
   </section>
 
   <section class="page" id="page-farm">
@@ -774,46 +803,50 @@
     </div>
   </section>
 
-  <section class="page" id="page-record">
+  <section class="page" id="page-more">
     <div class="hero">
-      <div class="eyebrow">Fertilizer Event</div>
-      <h2>新增施肥紀錄</h2>
-      <p class="lead">把單次施肥事件存起來，TeaCarbon 才能累積年度施氮量、高風險事件與碳排管理報表。</p>
+      <div class="eyebrow">More</div>
+      <h2>更多</h2>
+      <p class="lead">進階功能集中在這裡，避免干擾茶農主要操作路徑。</p>
     </div>
-    <div class="dual-grid">
-      <div class="panel">
-        <h3>施肥事件輸入</h3>
-        <div class="input-row"><label for="event-date">施肥日期</label><input id="event-date" type="date"></div>
-        <div class="input-row"><label for="event-product">肥料產品</label><select id="event-product"><option value="20">台肥 1 號複合肥料（約 N 20%）</option><option value="16">台肥 5 號複合肥料（約 N 16%）</option><option value="21">硫酸銨（約 N 21%）</option><option value="46">尿素（約 N 46%）</option><option value="custom">自訂氮含量</option></select></div>
-        <div class="input-row" id="event-custom-n-row" style="display:none;"><label for="event-custom-n">自訂 N %</label><input id="event-custom-n" type="number" min="0" max="100" step="0.1" value="20"></div>
-        <div class="input-row"><label for="event-amount">施用量</label><div class="unit-row"><input id="event-amount" type="number" min="0" step="1" value="200"><select id="event-unit"><option value="kg">kg</option><option value="bag">包（40kg/包）</option></select></div></div>
-        <div class="input-row"><label for="event-area">施肥面積（ha）</label><input id="event-area" type="number" min="0.01" step="0.01" value="1"></div>
-        <div class="input-row"><label for="event-rain">近 3 天雨量（mm）</label><input id="event-rain" type="number" min="0" step="1" value="8"></div>
-        <div class="input-row"><label for="event-temp">平均氣溫（°C）</label><input id="event-temp" type="number" min="0" step="0.1" value="18"></div>
-        <div class="input-row"><label for="event-humidity">平均濕度（%）</label><input id="event-humidity" type="number" min="0" max="100" step="1" value="82"></div>
-        <p class="hint">換算施氮量：<b id="event-n-output">40.0 kg N/ha</b>｜風險：<b id="event-risk-output">低風險</b></p>
-        <div class="btn-row">
-          <button class="btn primary" id="event-save-btn">儲存施肥紀錄</button>
-          <button class="btn" id="event-prefill-farm-btn">帶入茶園面積</button>
-        </div>
-      </div>
-      <div class="panel">
-        <h3>最近施肥紀錄</h3>
-        <div id="recent-records" class="empty-state">尚未有施肥紀錄。</div>
-      </div>
+    <div class="task-grid">
+      <button class="task-card" data-page-jump="reports">
+        <span class="mode-tag">資料整理</span>
+        <strong>資料匯出</strong>
+        <p>下載施肥紀錄與年度摘要，提供報表整理使用。</p>
+        <span class="mode-action">前往資料匯出</span>
+      </button>
+      <button class="task-card" data-page-jump="research">
+        <span class="mode-tag">研究者</span>
+        <strong>研究模型</strong>
+        <p>查看進階計算方法、7 天事件排放與季度估算。</p>
+        <span class="mode-action">進入研究模型</span>
+      </button>
+      <button class="task-card" data-page-jump="model">
+        <span class="mode-tag">方法文件</span>
+        <strong>方法說明</strong>
+        <p>了解模型來源、使用限制與平台定位。</p>
+        <span class="mode-action">查看方法說明</span>
+      </button>
     </div>
   </section>
 
   <section class="page" id="page-annual">
     <div class="hero">
       <div class="eyebrow">Annual Carbon</div>
-      <h2>年度碳排</h2>
-      <p class="lead">把單次施肥事件累積成年度施氮量、高風險事件、N2O 與 CO2e，讓茶園管理從單次判斷走向年度低碳管理。</p>
+      <h2>年度成果</h2>
+      <p class="lead">先看今年施肥次數、高風險事件與估算碳排，再決定要不要往下看細節。</p>
     </div>
     <div class="kpi-grid">
       <div class="metric-card"><div class="summary-label">施肥事件數</div><div class="summary-value" id="annual-event-count">0</div></div>
       <div class="metric-card"><div class="summary-label">年度施氮量</div><div class="summary-value" id="annual-n-total">0.0</div><div class="hint">kg N/ha</div></div>
-      <div class="metric-card"><div class="summary-label">年度 CO2e</div><div class="summary-value" id="annual-co2e-total">0.0</div><div class="hint">kg CO2e/ha</div></div>
+      <div class="metric-card"><div class="summary-label">高風險施肥</div><div class="summary-value" id="annual-high-risk-count">0</div><div class="hint">次</div></div>
+      <div class="metric-card"><div class="summary-label">估算 CO2e</div><div class="summary-value" id="annual-co2e-total">0.0</div><div class="hint">kg CO2e/ha</div></div>
+    </div>
+    <div class="page-tools">
+      <button class="btn" data-page-jump="risk">查看高風險紀錄</button>
+      <button class="btn primary" data-page-jump="reports">匯出年度報表</button>
+      <button class="btn" data-page-jump="decision" data-apply-intent="record">新增施肥紀錄</button>
     </div>
     <div class="panel" style="margin-top:18px;">
       <h3>年度事件明細</h3>
@@ -851,13 +884,22 @@
 
   <section class="page" id="page-decision">
     <div class="hero">
-      <div class="eyebrow">Decision Mode</div>
-      <h2>這次施肥，現在適合嗎？</h2>
-      <p class="lead">用最少欄位判斷風險。若你知道肥料產品與用量，系統會先換算成施氮量，再帶入判斷。</p>
+      <div class="eyebrow">Apply Flow</div>
+      <h2>我要施肥</h2>
+      <p class="lead">同一條流程完成施肥判斷與施肥紀錄，不需要先分辨自己該去哪一頁。</p>
     </div>
     <div class="section-grid">
       <div class="panel">
-        <h3>肥料換算器</h3>
+        <div class="intent-switch">
+          <button class="intent-btn active" id="intent-plan-btn">我今天想施肥</button>
+          <button class="intent-btn" id="intent-record-btn">我已經施肥了</button>
+        </div>
+        <div class="farm-badge" id="apply-farm-summary">尚未建立茶園資料，建議先到「我的茶園」建檔。</div>
+        <h3>Step 1：選肥料與用量</h3>
+        <div class="input-row">
+          <label for="apply-date">施肥日期</label>
+          <input type="date" id="apply-date">
+        </div>
         <div class="input-row">
           <label for="fertilizer-product">肥料產品</label>
           <select id="fertilizer-product">
@@ -875,25 +917,49 @@
         <div class="input-row">
           <label for="fertilizer-amount">施用量</label>
           <div class="unit-row">
-            <input type="number" id="fertilizer-amount" min="0" step="1" value="200">
+            <input type="number" id="fertilizer-amount" min="0" step="1" value="6">
             <select id="fertilizer-unit">
-              <option value="kg_ha">kg/ha</option>
-              <option value="bag_01ha">包/0.1ha（每包 40kg）</option>
+              <option value="bag">包</option>
+              <option value="kg">公斤</option>
             </select>
           </div>
         </div>
-        <p class="hint">換算施氮量：<b id="converted-n">40.0 kg N/ha</b></p>
-
-        <h3 style="margin-top:24px;">天氣條件</h3>
         <div class="input-row">
-          <label for="decision-n">施氮量</label>
-          <input type="number" id="decision-n" min="0" step="1" value="40">
+          <label for="apply-area">施肥面積（ha）</label>
+          <input type="number" id="apply-area" min="0.01" step="0.01" value="0.5">
+        </div>
+        <p class="hint">約等於 <b id="converted-n">40.0 kg N/ha</b></p>
+
+        <h3 style="margin-top:24px;">Step 2：輸入近 3 日雨量</h3>
+        <div class="input-row">
+          <label for="rain-today">今天雨量</label>
+          <input type="number" id="rain-today" min="0" step="1" value="0">
+        </div>
+        <div class="input-row">
+          <label for="rain-yesterday">昨天雨量</label>
+          <input type="number" id="rain-yesterday" min="0" step="1" value="0">
+        </div>
+        <div class="input-row">
+          <label for="rain-daybefore">前天雨量</label>
+          <input type="number" id="rain-daybefore" min="0" step="1" value="8">
         </div>
         <div class="input-row">
           <label for="decision-rain">近 3 天雨量</label>
-          <input type="number" id="decision-rain" min="0" step="1" value="8">
+          <input type="number" id="decision-rain" min="0" step="1" value="8" readonly>
         </div>
-        <p class="hint">如果不使用肥料換算器，也可以直接修改施氮量。</p>
+        <div class="input-row">
+          <label for="apply-temp">氣溫（°C）</label>
+          <input type="number" id="apply-temp" min="0" step="0.1" value="18">
+        </div>
+        <div class="input-row">
+          <label for="apply-humidity">濕度（%）</label>
+          <input type="number" id="apply-humidity" min="0" max="100" step="1" value="82">
+        </div>
+        <div class="page-tools">
+          <button class="btn primary" id="apply-check-btn">查看施肥建議</button>
+          <button class="btn" id="apply-reuse-btn">沿用上次紀錄</button>
+          <button class="btn" id="apply-reset-btn">重新填寫</button>
+        </div>
       </div>
 
       <div class="result-card low" id="decision-result">
@@ -921,6 +987,11 @@
           <b>該怎麼做？</b>
           <p id="decision-action">可依原定計畫施肥；若天氣預報轉為大雨，建議重新檢查。</p>
         </div>
+        <div class="result-actions">
+          <button class="btn primary" id="decision-save-btn">儲存為施肥紀錄</button>
+          <button class="btn" data-page-jump="home">回首頁</button>
+        </div>
+        <p class="hint" id="decision-save-hint">查看結果後，再決定是否儲存紀錄。</p>
       </div>
     </div>
   </section>
@@ -1258,6 +1329,7 @@
   var weekRains = [0, 0, 0, 0, 0, 0, 0];
   var emissionRains = [5, 8, 12, 6, 3, 0, 2];
   var lastEventTotalN2ON = 0;
+  var applyIntent = "plan";
   var STORAGE = {
     farm: "teacarbon_farm_v1",
     events: "teacarbon_events_v1"
@@ -1270,7 +1342,7 @@
     document.querySelectorAll(".nav-btn").forEach(function(btn) {
       btn.classList.toggle("active", btn.dataset.page === name);
     });
-    if (name === "home" || name === "annual" || name === "risk" || name === "reports" || name === "record" || name === "farm") {
+    if (name === "home" || name === "annual" || name === "risk" || name === "reports" || name === "farm" || name === "decision") {
       renderPlatformData();
     }
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1293,6 +1365,7 @@
   document.querySelectorAll("[data-page-jump]").forEach(function(btn) {
     btn.addEventListener("click", function() {
       showPage(btn.dataset.pageJump);
+      if (btn.dataset.applyIntent) setApplyIntent(btn.dataset.applyIntent);
       if (btn.dataset.panelJump) showResearchPanel(btn.dataset.panelJump);
     });
   });
@@ -1396,37 +1469,31 @@
       "<div class='record-row'><b>茶種</b><span>" + farm.variety + "</span><b>更新時間</b><span>" + farm.updated_at + "</span><span></span></div>" +
       "</div>";
   }
-  function renderRecentRecords() {
-    var events = loadEvents().slice().reverse().slice(0, 5);
-    var box = document.getElementById("recent-records");
-    if (!events.length) {
-      box.className = "empty-state";
-      box.textContent = "尚未有施肥紀錄。";
+  function renderApplyFarmSummary() {
+    var farm = loadFarm();
+    var box = document.getElementById("apply-farm-summary");
+    if (!box) return;
+    if (!farm) {
+      box.textContent = "尚未建立茶園資料，建議先到「我的茶園」建檔。";
       return;
     }
-    box.className = "record-list";
-    box.innerHTML = events.map(function(item) {
-      return "<div class='record-row'>" +
-        "<div><b>" + item.date + "</b><div class='hint'>" + item.product_name + "</div></div>" +
-        "<div>" + formatNumber(item.n_kg_ha, 1) + " kg N/ha</div>" +
-        "<div>" + formatNumber(item.rain3day_mm, 1) + " mm</div>" +
-        "<div><span class='risk-pill " + riskClassName(item.risk_level) + "'>" + item.risk_label + "</span></div>" +
-        "<div>" + formatNumber(item.co2e_kg_ha, 2) + " kg CO2e/ha</div>" +
-        "</div>";
-    }).join("");
+    box.innerHTML = "<b>目前茶園：" + farm.name + "</b><br>面積：" + formatNumber(farm.area_ha, 2) + " ha ｜ 栽培方式：" + farm.type + " ｜ 茶種：" + farm.variety;
   }
   function renderAnnualSummary() {
     var events = loadEvents();
     var totalN = 0;
     var totalCo2e = 0;
     var totalN2ON = 0;
+    var highRiskCount = 0;
     events.forEach(function(item) {
       totalN += item.n_kg_ha;
       totalCo2e += item.co2e_kg_ha;
       totalN2ON += item.n2o_n_kg_ha;
+      if (item.risk_level === 3) highRiskCount += 1;
     });
     document.getElementById("annual-event-count").textContent = String(events.length);
     document.getElementById("annual-n-total").textContent = formatNumber(totalN, 1);
+    document.getElementById("annual-high-risk-count").textContent = String(highRiskCount);
     document.getElementById("annual-co2e-total").textContent = formatNumber(totalCo2e, 1);
     var table = document.getElementById("annual-record-table");
     if (!events.length) {
@@ -1471,27 +1538,44 @@
   }
   function renderPlatformData() {
     renderFarmSummary();
-    renderRecentRecords();
+    renderApplyFarmSummary();
     renderAnnualSummary();
     renderRiskEvents();
   }
 
+  function setApplyIntent(mode) {
+    applyIntent = mode;
+    document.getElementById("intent-plan-btn").classList.toggle("active", mode === "plan");
+    document.getElementById("intent-record-btn").classList.toggle("active", mode === "record");
+    document.getElementById("decision-save-btn").textContent = mode === "plan" ? "儲存為施肥紀錄" : "已施肥，直接存檔";
+    document.getElementById("decision-save-hint").textContent = mode === "plan"
+      ? "看完建議後，可選擇存成今天的施肥紀錄。"
+      : "這筆資料會直接加入年度成果統計。";
+  }
   function calculateFertilizerN() {
     var product = document.getElementById("fertilizer-product").value;
     var customRow = document.getElementById("custom-n-row");
     customRow.style.display = product === "custom" ? "grid" : "none";
     var nPercent = product === "custom" ? Number(document.getElementById("custom-n-percent").value) : Number(product);
     var amount = Number(document.getElementById("fertilizer-amount").value) || 0;
+    var area = Number(document.getElementById("apply-area").value) || 1;
     var unit = document.getElementById("fertilizer-unit").value;
-    var kgHa = unit === "bag_01ha" ? amount * 40 / 0.1 : amount;
-    var nKgHa = kgHa * nPercent / 100;
+    var totalKg = unit === "bag" ? amount * 40 : amount;
+    var nKgHa = area > 0 ? totalKg * nPercent / 100 / area : 0;
     document.getElementById("converted-n").textContent = formatNumber(nKgHa, 1) + " kg N/ha";
-    document.getElementById("decision-n").value = formatNumber(nKgHa, 1).replace(/,/g, "");
+    return nKgHa;
+  }
+
+  function updateApplyRain() {
+    var total = (Number(document.getElementById("rain-today").value) || 0) +
+      (Number(document.getElementById("rain-yesterday").value) || 0) +
+      (Number(document.getElementById("rain-daybefore").value) || 0);
+    document.getElementById("decision-rain").value = String(total);
     updateDecision();
   }
 
   function updateDecision() {
-    var N = Number(document.getElementById("decision-n").value) || 0;
+    var N = calculateFertilizerN();
     var rain = Number(document.getElementById("decision-rain").value) || 0;
     var risk = classifyRisk(N, rain, "simple");
     var th = getThreshold(N, "simple");
@@ -1524,37 +1608,52 @@
     }
     document.getElementById("decision-status-n").textContent = formatNumber(N, 1) + " kg N/ha";
     document.getElementById("decision-status-rain").textContent = formatNumber(rain, 1) + " mm";
+    if (applyIntent === "record") {
+      title.textContent = risk === 1 ? "已建立施肥條件，風險低" : risk === 2 ? "已建立施肥條件，風險中" : "已建立施肥條件，風險高";
+      summary.textContent = "若你今天已經施肥，這筆資料可直接存成紀錄並加入年度成果。";
+    }
   }
 
-  ["fertilizer-product", "custom-n-percent", "fertilizer-amount", "fertilizer-unit"].forEach(function(id) {
-    document.getElementById(id).addEventListener("input", calculateFertilizerN);
-    document.getElementById(id).addEventListener("change", calculateFertilizerN);
+  ["fertilizer-product", "custom-n-percent", "fertilizer-amount", "fertilizer-unit", "apply-area"].forEach(function(id) {
+    document.getElementById(id).addEventListener("input", function() {
+      calculateFertilizerN();
+      updateDecision();
+    });
+    document.getElementById(id).addEventListener("change", function() {
+      calculateFertilizerN();
+      updateDecision();
+    });
   });
-  document.getElementById("decision-n").addEventListener("input", updateDecision);
-  document.getElementById("decision-rain").addEventListener("input", updateDecision);
-
-  function updateEventForm() {
-    var product = document.getElementById("event-product").value;
-    document.getElementById("event-custom-n-row").style.display = product === "custom" ? "grid" : "none";
-    var nPercent = product === "custom" ? Number(document.getElementById("event-custom-n").value) : Number(product);
-    var amount = Number(document.getElementById("event-amount").value) || 0;
-    var area = Number(document.getElementById("event-area").value) || 1;
-    var unit = document.getElementById("event-unit").value;
-    var totalKg = unit === "bag" ? amount * 40 : amount;
-    var nKgHa = area > 0 ? totalKg * nPercent / 100 / area : 0;
-    var rain = Number(document.getElementById("event-rain").value) || 0;
-    var risk = classifyRisk(nKgHa, rain, "simple");
-    document.getElementById("event-n-output").textContent = formatNumber(nKgHa, 1) + " kg N/ha";
-    document.getElementById("event-risk-output").textContent = risk === 1 ? "低風險" : risk === 2 ? "中風險" : "高風險";
-    return {
-      nPercent: nPercent,
-      nKgHa: nKgHa,
-      risk: risk
-    };
-  }
-  ["event-product", "event-custom-n", "event-amount", "event-unit", "event-area", "event-rain"].forEach(function(id) {
-    document.getElementById(id).addEventListener("input", updateEventForm);
-    document.getElementById(id).addEventListener("change", updateEventForm);
+  ["rain-today", "rain-yesterday", "rain-daybefore"].forEach(function(id) {
+    document.getElementById(id).addEventListener("input", updateApplyRain);
+  });
+  document.getElementById("intent-plan-btn").addEventListener("click", function() { setApplyIntent("plan"); });
+  document.getElementById("intent-record-btn").addEventListener("click", function() { setApplyIntent("record"); });
+  document.getElementById("apply-check-btn").addEventListener("click", updateDecision);
+  document.getElementById("apply-reset-btn").addEventListener("click", function() {
+    document.getElementById("fertilizer-amount").value = "6";
+    document.getElementById("fertilizer-unit").value = "bag";
+    document.getElementById("rain-today").value = "0";
+    document.getElementById("rain-yesterday").value = "0";
+    document.getElementById("rain-daybefore").value = "8";
+    updateApplyRain();
+    calculateFertilizerN();
+  });
+  document.getElementById("apply-reuse-btn").addEventListener("click", function() {
+    var events = loadEvents();
+    if (!events.length) return;
+    var last = events[events.length - 1];
+    document.getElementById("apply-date").value = new Date().toISOString().slice(0, 10);
+    document.getElementById("fertilizer-amount").value = String(last.amount_value || 6);
+    document.getElementById("fertilizer-unit").value = last.amount_unit === "kg" ? "kg" : "bag";
+    document.getElementById("apply-area").value = String(last.area_ha || 0.5);
+    document.getElementById("rain-today").value = "0";
+    document.getElementById("rain-yesterday").value = "0";
+    document.getElementById("rain-daybefore").value = String(last.rain3day_mm || 8);
+    document.getElementById("apply-temp").value = String(last.temp_c || 18);
+    document.getElementById("apply-humidity").value = String(last.humidity_percent || 82);
+    updateApplyRain();
+    calculateFertilizerN();
   });
   document.getElementById("farm-save-btn").addEventListener("click", function() {
     var farm = {
@@ -1566,34 +1665,29 @@
       updated_at: new Date().toLocaleString("zh-TW")
     };
     saveFarm(farm);
+    if (farm.area_ha) document.getElementById("apply-area").value = String(farm.area_ha);
     renderPlatformData();
+    calculateFertilizerN();
   });
-  document.getElementById("event-prefill-farm-btn").addEventListener("click", function() {
-    var farm = loadFarm();
-    if (farm && farm.area_ha) {
-      document.getElementById("event-area").value = farm.area_ha;
-      updateEventForm();
-    }
-  });
-  document.getElementById("event-save-btn").addEventListener("click", function() {
-    var derived = updateEventForm();
-    var rain = Number(document.getElementById("event-rain").value) || 0;
-    var temp = Number(document.getElementById("event-temp").value) || 18;
-    var humidity = Number(document.getElementById("event-humidity").value) || 82;
-    var emissions = estimateEventEmission(derived.nKgHa, rain, temp, humidity);
-    var risk = derived.risk;
+  document.getElementById("decision-save-btn").addEventListener("click", function() {
+    var nKgHa = calculateFertilizerN();
+    var rain = Number(document.getElementById("decision-rain").value) || 0;
+    var temp = Number(document.getElementById("apply-temp").value) || 18;
+    var humidity = Number(document.getElementById("apply-humidity").value) || 82;
+    var emissions = estimateEventEmission(nKgHa, rain, temp, humidity);
+    var risk = classifyRisk(nKgHa, rain, "simple");
     var actionText = risk === 1 ? "可施肥" : risk === 2 ? "先觀察" : "建議延後";
-    var productSelect = document.getElementById("event-product");
-    var productName = productSelect.options[productSelect.selectedIndex].text;
+    var productSelect2 = document.getElementById("fertilizer-product");
+    var productName = productSelect2.options[productSelect2.selectedIndex].text;
     var list = loadEvents();
     list.push({
       id: "evt_" + Date.now(),
-      date: document.getElementById("event-date").value || new Date().toISOString().slice(0, 10),
+      date: document.getElementById("apply-date").value || new Date().toISOString().slice(0, 10),
       product_name: productName,
-      amount_value: Number(document.getElementById("event-amount").value) || 0,
-      amount_unit: document.getElementById("event-unit").value,
-      area_ha: Number(document.getElementById("event-area").value) || 1,
-      n_kg_ha: derived.nKgHa,
+      amount_value: Number(document.getElementById("fertilizer-amount").value) || 0,
+      amount_unit: document.getElementById("fertilizer-unit").value,
+      area_ha: Number(document.getElementById("apply-area").value) || 1,
+      n_kg_ha: nKgHa,
       rain3day_mm: rain,
       temp_c: temp,
       humidity_percent: humidity,
@@ -1874,12 +1968,14 @@
     document.getElementById("farm-location").value = savedFarm.location || "";
     document.getElementById("farm-type").value = savedFarm.type || "慣行";
     document.getElementById("farm-variety").value = savedFarm.variety || "";
+    document.getElementById("apply-area").value = savedFarm.area_ha || "0.5";
   }
-  document.getElementById("event-date").value = new Date().toISOString().slice(0, 10);
+  document.getElementById("apply-date").value = new Date().toISOString().slice(0, 10);
   initWeekGrid();
   initEmissionRainGrid();
+  setApplyIntent("plan");
+  updateApplyRain();
   calculateFertilizerN();
-  updateEventForm();
   updateQuick();
   renderWeek();
   updatePlan();
