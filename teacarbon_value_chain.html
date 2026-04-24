@@ -337,6 +337,51 @@
     background: #fff;
     padding: 18px;
   }
+  .batch-grid {
+    display: grid;
+    gap: 14px;
+    margin-top: 18px;
+  }
+  .batch-card {
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: #fff;
+    padding: 18px;
+  }
+  .batch-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .progress-mini {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .progress-step {
+    border-radius: 14px;
+    padding: 10px;
+    background: var(--field);
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .progress-step.done {
+    background: var(--green-bg);
+    color: var(--leaf);
+  }
+  .progress-step.todo {
+    background: #fff7ef;
+    color: #9a6a18;
+  }
+  .batch-next {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgba(49, 91, 45, 0.08);
+  }
   .footer-note {
     margin-top: 28px;
     color: var(--muted);
@@ -349,6 +394,7 @@
     .module-grid,
     .bridge-grid,
     .template-grid,
+    .progress-mini,
     .hero-cards,
     .flow-grid,
     .record-row {
@@ -374,13 +420,13 @@
 <body>
 <header class="site-header">
   <div class="shell nav">
-    <div class="brand">TeaCarbon VC<span>茶葉價值鏈碳管理平台原型</span></div>
+    <div class="brand">TeaCarbon<span>茶園與茶葉產品碳管理平台</span></div>
     <nav class="nav-links" aria-label="主要導覽">
       <button class="nav-btn active" data-page="home">首頁</button>
-      <button class="nav-btn" data-page="farm">茶園端</button>
-      <button class="nav-btn" data-page="chain">價值鏈端</button>
-      <button class="nav-btn" data-page="bridge">EX-ACT Bridge</button>
-      <button class="nav-btn" data-page="footprint">產品碳足跡</button>
+      <button class="nav-btn" data-open-file="tea_n2o_tool_3.html" data-open-hash="">茶園管理</button>
+      <button class="nav-btn" data-page="chain">製茶加工</button>
+      <button class="nav-btn" data-page="footprint">產品物流</button>
+      <button class="nav-btn" data-page="bridge">成果報表</button>
     </nav>
   </div>
 </header>
@@ -388,46 +434,46 @@
 <main class="shell">
   <section class="page active" id="page-home">
     <div class="hero">
-      <div class="eyebrow">TeaCarbon VC</div>
-      <h1>把茶園事件資料，延伸到採收、加工、包裝、運輸與價值鏈碳足跡。</h1>
-      <p class="lead">這份新原型承接既有 TeaCarbon 茶農版，往 EX-ACT 與 EX-ACT VC 的資料邏輯升級，讓平台不只管理施肥與季度檢查，也能往茶菁、生產、加工、包裝、物流與產品批次追溯前進。</p>
+      <div class="eyebrow">Value Chain Workspace</div>
+      <h1>這裡接續 TeaCarbon 茶園管理，把一批茶一路做成可追溯的產品碳排資料。</h1>
+      <p class="lead">請先選這批茶從哪個茶園採收，再依序填寫加工、包裝與運輸資料。系統會告訴你這批茶目前做到哪一步，最後可產出產品碳足跡與匯出模板。</p>
     </div>
     <div class="hero-cards">
       <div class="hero-card">
-        <span class="tag">第一層</span>
-        <strong>茶農日常管理</strong>
-        <p>保留施肥、雨量、採收與事件紀錄，作為所有價值鏈資料的來源。</p>
+        <span class="tag">工作區 1</span>
+        <strong>茶園管理</strong>
+        <p>沿用既有茶園資料、施肥紀錄與採收資料，作為每一批茶的起點。</p>
       </div>
       <div class="hero-card">
-        <span class="tag">第二層</span>
-        <strong>季度檢查與資料品質</strong>
-        <p>把抽查、補登、資料品質等級與季度彙整接進田間與批次資料。</p>
+        <span class="tag">工作區 2</span>
+        <strong>製茶加工</strong>
+        <p>記錄茶菁投入、用電、燃料與乾茶產出，把加工資料連到同一批茶。</p>
       </div>
       <div class="hero-card">
-        <span class="tag">第三層</span>
-        <strong>EX-ACT / EX-ACT VC</strong>
-        <p>將茶園生產與價值鏈資料轉成可匯出的橋接格式，支撐情境模擬與碳足跡分析。</p>
+        <span class="tag">工作區 3</span>
+        <strong>產品物流與報表</strong>
+        <p>補齊包裝、倉儲、運輸資料，查看產品碳足跡，並下載 EX-ACT / EX-ACT VC 模板。</p>
       </div>
     </div>
     <div class="flow-grid" style="margin-top:18px;">
-      <div class="flow-card"><div class="flow-no">1</div><div><b>茶園 Farm ID</b><p class="hint">既有茶園資料與施肥事件沿用自 TeaCarbon 主版。</p></div></div>
-      <div class="flow-card"><div class="flow-no">2</div><div><b>採收批次</b><p class="hint">將茶園與採收日期、茶菁重量連成 Harvest Batch。</p></div></div>
-      <div class="flow-card"><div class="flow-no">3</div><div><b>加工批次</b><p class="hint">記錄 fresh leaf input、電力、燃料與 made tea output。</p></div></div>
-      <div class="flow-card"><div class="flow-no">4</div><div><b>包裝批次</b><p class="hint">記錄包材重量、數量與產品規格。</p></div></div>
-      <div class="flow-card"><div class="flow-no">5</div><div><b>運輸與倉儲</b><p class="hint">建立 distribution records，補齊下游活動。</p></div></div>
-      <div class="flow-card"><div class="flow-no">6</div><div><b>產品碳足跡</b><p class="hint">輸出 kg CO2e / kg 乾茶、150g 包裝與不同邊界結果。</p></div></div>
+      <div class="flow-card"><div class="flow-no">1</div><div><b>選茶園</b><p class="hint">確認這批茶來自哪一塊茶園。</p></div></div>
+      <div class="flow-card"><div class="flow-no">2</div><div><b>登記茶菁</b><p class="hint">輸入採收日期、茶菁重量與送到茶廠距離。</p></div></div>
+      <div class="flow-card"><div class="flow-no">3</div><div><b>登記加工</b><p class="hint">填這批茶用了多少電、多少燃料，最後做出多少乾茶。</p></div></div>
+      <div class="flow-card"><div class="flow-no">4</div><div><b>登記包裝</b><p class="hint">補上包材種類、重量與數量。</p></div></div>
+      <div class="flow-card"><div class="flow-no">5</div><div><b>登記運輸</b><p class="hint">補上運輸距離、車種與倉儲資料。</p></div></div>
+      <div class="flow-card"><div class="flow-no">6</div><div><b>查看結果</b><p class="hint">系統會產生這批茶的碳排結果與匯出模板。</p></div></div>
     </div>
   </section>
 
   <section class="page" id="page-farm">
     <div class="hero">
       <div class="eyebrow">Farm Layer</div>
-      <h2>茶園端與採收起點</h2>
-      <p class="lead">TeaCarbon VC 的起點不是加工廠，而是既有的茶園事件資料。這裡用 Farm ID 與 Harvest Batch 把田間管理接到後續價值鏈。</p>
+      <h2>登記這批茶菁</h2>
+      <p class="lead">這裡會把茶園資料接到採收批次。你需要填採收日期、茶菁重量與送到茶廠的距離。填完後，這批茶就可以往加工資料接下去。</p>
     </div>
     <div class="grid-2">
       <div class="panel">
-        <h3>既有茶園資料</h3>
+        <h3>目前茶園資料</h3>
         <div id="farm-source-summary" class="empty-state">尚未在主版 TeaCarbon 建立茶園資料。</div>
         <div class="pill-list">
           <span class="pill">施肥事件</span>
@@ -437,7 +483,8 @@
         </div>
       </div>
       <div class="panel">
-        <h3>Harvest Batch 建立</h3>
+        <h3>建立採收資料</h3>
+        <p class="hint">請先選這批茶從哪個茶園採收、採了幾公斤，以及送到茶廠的距離。這筆資料會連到後續加工與產品碳足跡。</p>
         <div class="input-row"><label for="harvest-date">採收日期</label><input id="harvest-date" type="date"></div>
         <div class="input-row"><label for="harvest-farm-id">來源茶園</label><input id="harvest-farm-id" type="text" placeholder="自動帶入 Farm ID"></div>
         <div class="input-row"><label for="harvest-fresh-kg">茶菁重量（kg）</label><input id="harvest-fresh-kg" type="number" min="0" step="0.1" value="120"></div>
@@ -446,7 +493,7 @@
         <div class="input-row"><label for="harvest-vehicle">運輸工具</label><select id="harvest-vehicle"><option value="機車">機車</option><option value="小貨車">小貨車</option><option value="卡車">卡車</option></select></div>
         <div class="input-row"><label for="harvest-loss-rate">採收到加工前損耗率（%）</label><input id="harvest-loss-rate" type="number" min="0" step="0.1" value="3"></div>
         <div class="btn-row">
-          <button class="btn primary" id="harvest-save-btn">建立採收批次</button>
+          <button class="btn primary" id="harvest-save-btn">登記這批茶菁</button>
         </div>
       </div>
     </div>
@@ -458,44 +505,52 @@
 
   <section class="page" id="page-chain">
     <div class="hero">
-      <div class="eyebrow">Value Chain Layer</div>
-      <h2>加工、包裝、運輸與批次追溯</h2>
-      <p class="lead">用批次 ID 把茶菁、乾茶、包裝與物流串起來，形成 Value Chain Carbon Footprint 的最小資料骨架。</p>
+      <div class="eyebrow">Batch Workflow</div>
+      <h2>製茶加工與產品物流</h2>
+      <p class="lead">這裡不是單純幾張表單，而是一批茶的流程。你只要照順序補完加工、包裝與運輸資料，系統會告訴你目前做到哪一步，下一步要填什麼。</p>
+    </div>
+    <div class="panel">
+      <h3>產品批次總覽</h3>
+      <p class="hint">每一張卡代表一批茶目前的資料完整度。先看還缺哪一步，再按下一步往下填。</p>
+      <div id="batch-overview" class="empty-state">尚未建立批次流程。請先從「登記這批茶菁」開始。</div>
     </div>
     <div class="module-grid">
       <div class="module-card">
-        <span class="tag">Processing Batch</span>
-        <strong>加工紀錄</strong>
-        <div class="input-row"><label for="processing-harvest-id">來源採收批次</label><select id="processing-harvest-id"></select></div>
+        <span class="tag">Step 1</span>
+        <strong>登記這批茶的加工資料</strong>
+        <p class="hint">請先選這批茶菁來自哪一次採收，再輸入用電、燃料與最後做出的乾茶重量。</p>
+        <div class="input-row"><label for="processing-harvest-id">這批茶菁來自哪一次採收？</label><select id="processing-harvest-id"></select></div>
         <div class="input-row"><label for="processing-tea-type">茶類</label><select id="processing-tea-type"><option value="烏龍茶">烏龍茶</option><option value="綠茶">綠茶</option><option value="紅茶">紅茶</option></select></div>
-        <div class="input-row"><label for="processing-electricity">用電（kWh）</label><input id="processing-electricity" type="number" min="0" step="0.1" value="45"></div>
-        <div class="input-row"><label for="processing-fuel-type">燃料類型</label><select id="processing-fuel-type"><option value="LPG">LPG</option><option value="柴油">柴油</option><option value="天然氣">天然氣</option><option value="木材">木材</option></select></div>
-        <div class="input-row"><label for="processing-fuel-amount">燃料用量</label><input id="processing-fuel-amount" type="number" min="0" step="0.1" value="12"></div>
-        <div class="input-row"><label for="processing-output">乾茶產出（kg）</label><input id="processing-output" type="number" min="0" step="0.1" value="28"></div>
-        <div class="btn-row"><button class="btn primary" id="processing-save-btn">建立加工批次</button></div>
+        <div class="input-row"><label for="processing-electricity">這批加工用了多少電？（kWh）</label><input id="processing-electricity" type="number" min="0" step="0.1" value="45"></div>
+        <div class="input-row"><label for="processing-fuel-type">加工時使用哪一種燃料？</label><select id="processing-fuel-type"><option value="LPG">LPG</option><option value="柴油">柴油</option><option value="天然氣">天然氣</option><option value="木材">木材</option></select></div>
+        <div class="input-row"><label for="processing-fuel-amount">這批加工用了多少燃料？</label><input id="processing-fuel-amount" type="number" min="0" step="0.1" value="12"></div>
+        <div class="input-row"><label for="processing-output">最後做出多少公斤乾茶？</label><input id="processing-output" type="number" min="0" step="0.1" value="28"></div>
+        <div class="btn-row"><button class="btn primary" id="processing-save-btn">儲存加工資料</button></div>
       </div>
       <div class="module-card">
-        <span class="tag">Packaging Batch</span>
-        <strong>包裝紀錄</strong>
-        <div class="input-row"><label for="packaging-processing-id">來源加工批次</label><select id="packaging-processing-id"></select></div>
+        <span class="tag">Step 2</span>
+        <strong>登記包裝資料</strong>
+        <p class="hint">請輸入這批茶使用的包材種類、重量與數量。這些資料會用來估算每包茶的包裝碳排。</p>
+        <div class="input-row"><label for="packaging-processing-id">這批包裝接的是哪一筆加工資料？</label><select id="packaging-processing-id"></select></div>
         <div class="input-row"><label for="packaging-type">包材類型</label><select id="packaging-type"><option value="真空袋">真空袋</option><option value="鋁箔袋">鋁箔袋</option><option value="紙盒">紙盒</option><option value="鐵罐">鐵罐</option><option value="禮盒">禮盒</option></select></div>
         <div class="input-row"><label for="packaging-material">材質</label><select id="packaging-material"><option value="plastic">plastic</option><option value="paper">paper</option><option value="metal">metal</option></select></div>
         <div class="input-row"><label for="packaging-weight-g">單件包材重量（g）</label><input id="packaging-weight-g" type="number" min="0" step="0.1" value="15"></div>
         <div class="input-row"><label for="packaging-quantity">數量</label><input id="packaging-quantity" type="number" min="0" step="1" value="40"></div>
         <div class="input-row"><label for="packaging-product-weight-g">單件茶葉重量（g）</label><input id="packaging-product-weight-g" type="number" min="0" step="1" value="150"></div>
-        <div class="btn-row"><button class="btn primary" id="packaging-save-btn">建立包裝批次</button></div>
+        <div class="btn-row"><button class="btn primary" id="packaging-save-btn">儲存包裝資料</button></div>
       </div>
       <div class="module-card">
-        <span class="tag">Distribution</span>
-        <strong>運輸與銷售</strong>
-        <div class="input-row"><label for="distribution-packaging-id">來源包裝批次</label><select id="distribution-packaging-id"></select></div>
+        <span class="tag">Step 3</span>
+        <strong>登記運輸與倉儲</strong>
+        <p class="hint">請輸入這批茶從哪裡送到哪裡、距離多遠、用什麼車運送。補完後即可計算產品端碳排。</p>
+        <div class="input-row"><label for="distribution-packaging-id">這筆運輸接的是哪一筆包裝資料？</label><select id="distribution-packaging-id"></select></div>
         <div class="input-row"><label for="distribution-from">起點</label><input id="distribution-from" type="text" value="茶廠"></div>
         <div class="input-row"><label for="distribution-to">終點</label><input id="distribution-to" type="text" value="通路"></div>
         <div class="input-row"><label for="distribution-distance">距離（km）</label><input id="distribution-distance" type="number" min="0" step="0.1" value="35"></div>
         <div class="input-row"><label for="distribution-weight">重量（kg）</label><input id="distribution-weight" type="number" min="0" step="0.1" value="20"></div>
         <div class="input-row"><label for="distribution-vehicle">運具</label><select id="distribution-vehicle"><option value="小貨車">小貨車</option><option value="卡車">卡車</option><option value="機車">機車</option></select></div>
         <div class="input-row"><label for="distribution-storage-kwh">倉儲用電（kWh）</label><input id="distribution-storage-kwh" type="number" min="0" step="0.1" value="18"></div>
-        <div class="btn-row"><button class="btn primary" id="distribution-save-btn">建立物流紀錄</button></div>
+        <div class="btn-row"><button class="btn primary" id="distribution-save-btn">儲存運輸資料</button></div>
       </div>
     </div>
     <div class="grid-3" style="margin-top:18px;">
@@ -507,23 +562,23 @@
 
   <section class="page" id="page-bridge">
     <div class="hero">
-      <div class="eyebrow">Bridge Layer</div>
-      <h2>EX-ACT / EX-ACT VC Bridge</h2>
-      <p class="lead">TeaCarbon 不直接取代 EX-ACT 或 EX-ACT VC，而是把前端事件與批次資料整理成可轉換、可匯出、可比較 current scenario 與 planned scenario 的橋接資料。</p>
+      <div class="eyebrow">Reports & Export</div>
+      <h2>匯出盤查與研究用資料</h2>
+      <p class="lead">TeaCarbon 會先幫你把茶園、加工、包裝和運輸資料整理好。需要做研究或盤查時，再從這裡下載 EX-ACT 或 EX-ACT VC 所需資料。</p>
     </div>
     <div class="bridge-grid">
       <div class="bridge-card">
-        <h3>EX-ACT 應負責的範圍</h3>
+        <h3>茶園生產資料會整理到這裡</h3>
         <div class="pill-list">
           <span class="pill">茶園土地</span>
           <span class="pill">土壤碳</span>
           <span class="pill">施肥 N 投入</span>
           <span class="pill">茶菁生產</span>
         </div>
-        <p class="hint">TeaCarbon 現有的茶園資料、施肥事件、季度檢查與資料品質，可整理成 EX-ACT 所需的土地、作物、肥料、土壤管理與 N2O 輸入資料。</p>
+        <p class="hint">如果你要整理茶園生產端資料，這裡會把茶園基本資料、施肥事件、季度檢查與資料品質整理成可匯出的模板。</p>
       </div>
       <div class="bridge-card">
-        <h3>EX-ACT VC 應負責的範圍</h3>
+        <h3>價值鏈資料會整理到這裡</h3>
         <div class="pill-list">
           <span class="pill">加工</span>
           <span class="pill">包裝</span>
@@ -531,7 +586,7 @@
           <span class="pill">運輸</span>
           <span class="pill">通路</span>
         </div>
-        <p class="hint">Harvest Batch、Processing Batch、Packaging Batch、Distribution Record 與 Product SKU 可整理成 EX-ACT VC 的 farm-gate-to-shelf 價值鏈資料。</p>
+        <p class="hint">如果你要整理加工、包裝、倉儲與運輸資料，這裡會把每一批茶的資料整理成可匯出的價值鏈模板。</p>
       </div>
     </div>
     <div class="panel" style="margin-top:18px;">
@@ -553,26 +608,26 @@
           <tr><td>運輸與銷售</td><td>distance、vehicle、weight、distribution</td><td>不處理</td><td>主方法框架</td></tr>
         </tbody>
       </table>
-      <p class="hint">這裡不只輸出原始 JSON，也可直接下載可開啟於 Excel 的 `.xls` 範本與可整理於試算表的 `.csv` 範本。</p>
+      <p class="hint">這裡不只輸出原始資料，也可直接下載可開啟於 Excel 的 `.xls` 範本與可整理於試算表的 `.csv` 範本。</p>
       <div class="template-grid">
         <div class="template-card">
           <div class="tag">Tea Farm → EX-ACT</div>
-          <h3>EX-ACT 茶園生產模板</h3>
+          <h3>下載茶園生產資料</h3>
           <p class="hint">含茶園基本資料、年度施肥事件彙整、季度資料品質與茶園端排放欄位。</p>
           <div class="page-tools">
-            <button class="btn primary" id="export-exact-csv-btn">CSV 模板</button>
-            <button class="btn" id="export-exact-xls-btn">Excel 模板 (.xls)</button>
-            <button class="btn soft" id="export-exact-btn">Bridge JSON</button>
+            <button class="btn primary" id="export-exact-csv-btn">下載試算表 CSV</button>
+            <button class="btn" id="export-exact-xls-btn">下載 Excel 模板</button>
+            <button class="btn soft" id="export-exact-btn">下載原始資料</button>
           </div>
         </div>
         <div class="template-card">
           <div class="tag">Factory / Product → EX-ACT VC</div>
-          <h3>EX-ACT VC 價值鏈模板</h3>
+          <h3>下載加工與運輸資料</h3>
           <p class="hint">含採收批次、加工、包裝、運輸、倉儲與產品邊界欄位，可直接整理 farm-gate-to-shelf 資料。</p>
           <div class="page-tools">
-            <button class="btn primary" id="export-vc-csv-btn">CSV 模板</button>
-            <button class="btn" id="export-vc-xls-btn">Excel 模板 (.xls)</button>
-            <button class="btn soft" id="export-vc-btn">Bridge JSON</button>
+            <button class="btn primary" id="export-vc-csv-btn">下載試算表 CSV</button>
+            <button class="btn" id="export-vc-xls-btn">下載 Excel 模板</button>
+            <button class="btn soft" id="export-vc-btn">下載原始資料</button>
           </div>
         </div>
       </div>
@@ -581,9 +636,9 @@
 
   <section class="page" id="page-footprint">
     <div class="hero">
-      <div class="eyebrow">Footprint Layer</div>
-      <h2>產品碳足跡結果</h2>
-      <p class="lead">這裡用原型係數把茶園端、加工、包裝、運輸與倉儲排放加總，做出可討論的價值鏈結果。正式版可再替換成更完整的 EX-ACT / EX-ACT VC 係數與邊界。</p>
+      <div class="eyebrow">Product Footprint</div>
+      <h2>查看這批茶的碳排結果</h2>
+      <p class="lead">系統會把茶園、加工、包裝與運輸資料加總，換算成每公斤乾茶或每包產品的碳排量。你可以先用這裡檢查資料是否補齊，再決定要不要匯出報表。</p>
     </div>
     <div class="kpi-grid">
       <div class="kpi-card"><div class="summary-label">Boundary A</div><div class="summary-value" id="fp-farm">0.00</div><div class="hint">kg CO2e / kg 茶菁</div></div>
@@ -607,7 +662,7 @@
     </div>
   </section>
 
-  <p class="footer-note">TeaCarbon VC Prototype｜在既有 TeaCarbon 架構上新增 Harvest / Processing / Packaging / Distribution / EX-ACT Bridge｜版本 v0.1</p>
+  <p class="footer-note">TeaCarbon Value Chain Workspace｜把茶園管理、製茶加工、產品物流與成果匯出接成同一套工作流｜版本 v0.2</p>
 </main>
 
 <script>
@@ -706,7 +761,15 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
   document.querySelectorAll(".nav-btn").forEach(function(btn) {
-    btn.addEventListener("click", function() { showPage(btn.dataset.page); });
+    btn.addEventListener("click", function() {
+      if (btn.dataset.page) {
+        showPage(btn.dataset.page);
+        return;
+      }
+      var target = btn.dataset.openFile || "tea_n2o_tool_3.html";
+      var hash = btn.dataset.openHash ? ("#" + btn.dataset.openHash) : "";
+      window.location.href = target + hash;
+    });
   });
 
   function currentFarmSummary() {
@@ -777,6 +840,41 @@
     box.className = "record-list";
     box.innerHTML = items.slice().reverse().map(function(item) {
       return "<div class='record-row'><div><b>" + item.id + "</b><div class='hint'>" + item.packaging_batch_id + "</div></div><div>" + item.from_location + " → " + item.to_location + "</div><div>" + formatNumber(item.distance_km, 1) + " km</div><div>" + item.vehicle_type + "</div><div>" + formatNumber(item.storage_kwh, 1) + " kWh</div></div>";
+    }).join("");
+  }
+  function renderBatchOverview() {
+    var harvest = read(STORAGE.harvest, []);
+    var processing = read(STORAGE.processing, []);
+    var packaging = read(STORAGE.packaging, []);
+    var distribution = read(STORAGE.distribution, []);
+    var box = document.getElementById("batch-overview");
+    if (!box) return;
+    if (!harvest.length) {
+      box.className = "empty-state";
+      box.textContent = "尚未建立批次流程。請先從「登記這批茶菁」開始。";
+      return;
+    }
+    box.className = "batch-grid";
+    box.innerHTML = harvest.slice().reverse().map(function(item) {
+      var process = processing.find(function(row) { return row.harvest_batch_id === item.id; });
+      var pack = process ? packaging.find(function(row) { return row.processing_batch_id === process.id; }) : null;
+      var ship = pack ? distribution.find(function(row) { return row.packaging_batch_id === pack.id; }) : null;
+      var ready = !!(process && pack && ship);
+      var doneCount = ready ? 5 : (1 + (process ? 1 : 0) + (pack ? 1 : 0) + (ship ? 1 : 0));
+      var percent = Math.round(doneCount / 5 * 100);
+      var nextStep = !process ? "下一步：登記加工資料" : !pack ? "下一步：登記包裝資料" : !ship ? "下一步：登記運輸資料" : "下一步：查看這批茶碳排";
+      var helper = !process ? "這批茶還缺少加工資料。" : !pack ? "這批茶還缺少包裝資料。" : !ship ? "這批茶還缺少運輸資料。" : "這批茶資料已完整，可以查看產品碳足跡。";
+      return "<div class='batch-card'>" +
+        "<div class='batch-head'><div><div class='tag'>產品批次：" + item.id + "</div><h3 style='margin:6px 0 0;'>來源茶園：" + item.farm_id + "</h3><p class='hint' style='margin-top:6px;'>採收日期：" + item.harvest_date + "｜茶菁重量：" + formatNumber(item.fresh_leaf_kg, 1) + " kg</p></div><div><div class='summary-label'>資料完整度</div><div class='summary-value' style='font-size:26px;'>" + percent + "%</div></div></div>" +
+        "<div class='progress-mini'>" +
+          "<div class='progress-step done'>茶菁資料 ✓</div>" +
+          "<div class='progress-step " + (process ? "done" : "todo") + "'>加工資料 " + (process ? "✓" : "未完成") + "</div>" +
+          "<div class='progress-step " + (pack ? "done" : "todo") + "'>包裝資料 " + (pack ? "✓" : "未完成") + "</div>" +
+          "<div class='progress-step " + (ship ? "done" : "todo") + "'>運輸資料 " + (ship ? "✓" : "未完成") + "</div>" +
+          "<div class='progress-step " + (ready ? "done" : "todo") + "'>產品碳足跡 " + (ready ? "可查看" : "未產生") + "</div>" +
+        "</div>" +
+        "<div class='batch-next'><b>" + nextStep + "</b><div class='hint' style='margin-top:6px;'>" + helper + "</div></div>" +
+      "</div>";
     }).join("");
   }
 
@@ -989,6 +1087,7 @@
     renderProcessingList();
     renderPackagingList();
     renderDistributionList();
+    renderBatchOverview();
     refreshBatchSelects();
     renderFootprint();
   }

@@ -647,6 +647,9 @@
     gap: 18px;
     margin-top: 22px;
   }
+  .workspace-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
   .task-card {
     border: 1px solid var(--line);
     border-radius: 24px;
@@ -796,6 +799,7 @@
     .research-flow,
     .hero-actions,
     .task-grid,
+    .workspace-grid,
     .role-grid,
     .kpi-grid,
     .dual-grid,
@@ -823,13 +827,13 @@
 <body>
 <header class="site-header">
   <div class="shell nav">
-    <div class="brand">TeaCarbon<span>茶園低碳施肥與碳排管理平台</span></div>
+    <div class="brand">TeaCarbon<span>茶園與茶葉產品碳管理平台</span></div>
     <nav class="nav-links" aria-label="主要導覽">
       <button class="nav-btn active" data-page="home">首頁</button>
-      <button class="nav-btn" data-page="decision">我要施肥</button>
-      <button class="nav-btn" data-page="farm">我的茶園</button>
-      <button class="nav-btn" data-page="annual">年度成果</button>
-      <button class="nav-btn" data-page="more">更多</button>
+      <button class="nav-btn" data-page="decision">茶園管理</button>
+      <button class="nav-btn" data-open-file="teacarbon_value_chain.html" data-open-hash="chain">製茶加工</button>
+      <button class="nav-btn" data-open-file="teacarbon_value_chain.html" data-open-hash="footprint">產品物流</button>
+      <button class="nav-btn" data-page="annual">成果報表</button>
     </nav>
   </div>
 </header>
@@ -838,51 +842,57 @@
   <section class="page active" id="page-home">
     <div class="hero">
       <div class="eyebrow">TeaCarbon Platform</div>
-      <h1>今天想做什麼？</h1>
-      <p class="lead">先完成眼前任務，再讓資料自動累積成年度成果。</p>
+      <h1>TeaCarbon 茶園與茶葉產品碳管理平台，今天要處理哪一段？</h1>
+      <p class="lead">先選工作區，再照著步驟完成資料。系統會在背後把施肥、採收、加工、包裝、運輸資料整理成本季檢查、年度成果、產品碳足跡與匯出模板。</p>
     </div>
     <div class="panel role-spotlight">
-      <div class="role-meta">Role Switch</div>
+      <div class="role-meta">我是這一種使用者</div>
       <div class="role-switch" aria-label="角色切換">
-        <button class="role-btn active" data-role="farm">Farm</button>
-        <button class="role-btn" data-role="factory">Factory</button>
-        <button class="role-btn" data-role="product">Product</button>
-        <button class="role-btn" data-role="advisory">Advisory</button>
+        <button class="role-btn active" data-role="farm">茶農</button>
+        <button class="role-btn" data-role="factory">茶廠</button>
+        <button class="role-btn" data-role="product">品牌端</button>
+        <button class="role-btn" data-role="advisory">輔導員</button>
       </div>
       <div id="role-spotlight-content">
-        <div class="role-title" id="role-title">Farm｜茶農日常管理</div>
-        <p class="role-copy" id="role-copy">先判斷今天適不適合施肥，再把施肥事件、季度檢查與年度成果慢慢累積起來。這一版優先服務茶農的日常操作。</p>
+        <div class="role-title" id="role-title">茶農｜先處理茶園日常管理</div>
+        <p class="role-copy" id="role-copy">先判斷今天適不適合施肥，再把施肥、採收與本季檢查慢慢累積起來。你不需要先理解碳盤查架構，也能照著步驟完成記錄。</p>
         <div class="role-actions" id="role-actions"></div>
       </div>
     </div>
-    <div class="task-grid">
+    <div class="task-grid workspace-grid">
       <button class="task-card" data-page-jump="decision" data-apply-intent="plan">
-        <span class="mode-tag">任務 1</span>
-        <strong>我要判斷今天能不能施肥</strong>
-        <p>輸入肥料和近 3 天雨量，馬上看紅黃綠燈。</p>
-        <span class="mode-action">開始判斷</span>
+        <span class="mode-tag">工作區 1</span>
+        <strong>茶園管理</strong>
+        <p>記錄施肥、雨量與採收資料，判斷現在適不適合施肥，也可順手存成施肥紀錄。</p>
+        <span class="mode-action">進入茶園管理</span>
       </button>
-      <button class="task-card" data-page-jump="decision" data-apply-intent="record">
-        <span class="mode-tag">任務 2</span>
-        <strong>我要登記一筆施肥紀錄</strong>
-        <p>把今天的肥料、用量和日期存起來，累積年度碳排。</p>
-        <span class="mode-action">新增紀錄</span>
+      <button class="task-card" data-open-file="teacarbon_value_chain.html" data-open-hash="chain">
+        <span class="mode-tag">工作區 2</span>
+        <strong>製茶加工</strong>
+        <p>記錄這批茶加工用了多少電、多少燃料，以及最後做出多少乾茶。</p>
+        <span class="mode-action">進入加工紀錄</span>
+      </button>
+      <button class="task-card" data-open-file="teacarbon_value_chain.html" data-open-hash="footprint">
+        <span class="mode-tag">工作區 3</span>
+        <strong>包裝與運輸</strong>
+        <p>記錄包材、倉儲與出貨運輸資料，計算每公斤乾茶或每包茶的碳排量。</p>
+        <span class="mode-action">進入產品資料</span>
       </button>
       <button class="task-card" data-page-jump="annual">
-        <span class="mode-tag">任務 3</span>
-        <strong>我要查看今年低碳成果</strong>
-        <p>查看今年施肥次數、高風險事件和估算碳排。</p>
-        <span class="mode-action">查看成果</span>
+        <span class="mode-tag">工作區 4</span>
+        <strong>成果與報表</strong>
+        <p>查看本季檢查、年度成果、價值鏈成果，並下載報表與盤查資料。</p>
+        <span class="mode-action">查看成果報表</span>
       </button>
     </div>
-    <p class="hint" style="margin-top:18px;">進階功能：研究模型、進階計算方法、資料匯出、方法說明</p>
+    <p class="hint" style="margin-top:18px;">研究模型、方法說明與 EX-ACT / EX-ACT VC 模板，已集中在成果與報表工作區。</p>
   </section>
 
   <section class="page" id="page-farm">
     <div class="hero">
-      <div class="eyebrow">My Farm</div>
-      <h2>我的茶園</h2>
-      <p class="lead">先把茶園主檔建立起來，TeaCarbon 才能把後續施肥紀錄、風險事件與年度碳排串成同一份管理資料。</p>
+      <div class="eyebrow">Farm Profile</div>
+      <h2>建立茶園基本資料</h2>
+      <p class="lead">這裡先填茶園名稱、面積、地點與栽培方式。之後每一筆施肥、採收與碳排資料，都會自動累積到這塊茶園。</p>
     </div>
     <div class="dual-grid">
       <div class="panel">
@@ -905,9 +915,9 @@
 
   <section class="page" id="page-more">
     <div class="hero">
-      <div class="eyebrow">More</div>
-      <h2>更多</h2>
-      <p class="lead">進階功能集中在這裡，避免干擾茶農主要操作路徑。</p>
+      <div class="eyebrow">Export & Notes</div>
+      <h2>進階匯出與方法說明</h2>
+      <p class="lead">如果你要整理給研究、盤查或輔導使用，可以從這裡下載模板、查看方法說明與進階模型。</p>
     </div>
     <div class="task-grid">
       <button class="task-card" data-open-file="teacarbon_value_chain.html" data-open-hash="home">
@@ -945,9 +955,9 @@
 
   <section class="page" id="page-annual">
     <div class="hero">
-      <div class="eyebrow">Annual Carbon</div>
-      <h2>年度成果</h2>
-      <p class="lead">先看今年施肥次數、高風險事件與估算碳排，再決定要不要往下看細節。</p>
+      <div class="eyebrow">Results Center</div>
+      <h2>成果中心</h2>
+      <p class="lead">這裡整理本季與今年的低碳管理成果。你可以看到施肥次數、高風險紀錄、估算碳排量，以及還需要補充哪些資料。</p>
     </div>
     <div class="kpi-grid">
       <div class="metric-card"><div class="summary-label">施肥事件數</div><div class="summary-value" id="annual-event-count">0</div></div>
@@ -957,11 +967,13 @@
     </div>
     <div class="page-tools">
       <button class="btn" data-page-jump="risk">查看高風險紀錄</button>
-      <button class="btn primary" data-page-jump="reports">匯出年度報表</button>
+      <button class="btn" data-open-file="teacarbon_value_chain.html" data-open-hash="footprint">查看價值鏈成果</button>
+      <button class="btn primary" data-page-jump="reports">下載成果報表</button>
       <button class="btn" data-page-jump="decision" data-apply-intent="record">新增施肥紀錄</button>
     </div>
     <div class="panel" style="margin-top:18px;">
-      <h3>本季檢查</h3>
+      <h3>本季資料檢查</h3>
+      <p class="hint">檢查這一季的施肥紀錄有沒有漏填、是否有紅燈事件，以及哪些資料需要補充。完成本季檢查後，年度成果會更完整。</p>
       <div class="input-row">
         <label for="review-quarter">選擇季度</label>
         <div class="unit-row">
@@ -984,21 +996,21 @@
       </div>
       <div class="review-grid">
         <div>
-          <h3>抽查清單</h3>
+          <h3>需要確認的資料</h3>
           <div class="checklist" id="quarter-checklist"></div>
         </div>
         <div>
-          <h3>本季改善建議</h3>
+          <h3>下季可以改善的地方</h3>
           <div id="quarter-advice" class="empty-state">選擇季度後會顯示本季改善建議。</div>
         </div>
       </div>
       <div class="panel" style="margin-top:16px; padding:16px;">
-        <h3>待補與異常事件</h3>
+        <h3>需要補充或確認的紀錄</h3>
         <div id="quarter-review-list" class="empty-state">目前沒有待補或異常事件。</div>
       </div>
     </div>
     <div class="panel" style="margin-top:18px;">
-      <h3>年度事件明細</h3>
+      <h3>今年施肥明細</h3>
       <div id="annual-record-table" class="empty-state">尚未有年度資料可彙整。</div>
     </div>
   </section>
@@ -1018,24 +1030,25 @@
   <section class="page" id="page-reports">
     <div class="hero">
       <div class="eyebrow">Reports</div>
-      <h2>報表輸出</h2>
-      <p class="lead">以目前原型資料輸出茶園施肥紀錄與年度碳排摘要，作為茶農版、輔導版與盤查輔助版報表的起點。</p>
+      <h2>下載報表與盤查資料</h2>
+      <p class="lead">你可以下載茶農版、輔導版與盤查前置資料。若要整理給 EX-ACT 或 EX-ACT VC 使用，也可從這裡進一步打開模板下載區。</p>
     </div>
     <div class="panel">
-      <h3>匯出工具</h3>
+      <h3>報表與資料下載</h3>
       <div class="page-tools">
         <button class="btn primary" id="export-csv-btn">匯出施肥紀錄 CSV</button>
         <button class="btn" id="export-summary-btn">下載年度摘要 JSON</button>
+        <button class="btn" data-open-file="teacarbon_value_chain.html" data-open-hash="bridge">下載盤查資料模板</button>
       </div>
-      <p class="hint">目前 v1 原型先提供結構化資料匯出；之後可再接 PDF / Excel 正式報表樣板。</p>
+      <p class="hint">目前先提供結構化匯出與模板下載；之後可再接茶農版、輔導版、產品碳足跡版 PDF / Excel 正式報表。</p>
     </div>
   </section>
 
   <section class="page" id="page-decision">
     <div class="hero">
-      <div class="eyebrow">Apply Flow</div>
-      <h2>我要施肥</h2>
-      <p class="lead">同一條流程完成施肥判斷與施肥紀錄，不需要先分辨自己該去哪一頁。</p>
+      <div class="eyebrow">Farm Workspace</div>
+      <h2>茶園管理</h2>
+      <p class="lead">施肥前先看風險，施肥後順手存紀錄。先選肥料和用量，再輸入最近 3 天雨量。系統會判斷現在適不適合施肥，也可以把結果存成紀錄。</p>
     </div>
     <div class="section-grid">
       <div class="panel">
@@ -1045,6 +1058,7 @@
         </div>
         <div class="farm-badge" id="apply-farm-summary">尚未建立茶園資料，建議先到「我的茶園」建檔。</div>
         <h3>Step 1：選肥料與用量</h3>
+        <p class="hint">請先選肥料、用量與施肥面積。系統會自動把「幾包肥料」換算成「每公頃施氮量」，用來判斷施肥風險與估算排放。</p>
         <div class="input-row">
           <label for="apply-date">施肥日期</label>
           <input type="date" id="apply-date">
@@ -1080,6 +1094,7 @@
         <p class="hint">約等於 <b id="converted-n">40.0 kg N/ha</b></p>
 
         <h3 style="margin-top:24px;">Step 2：輸入近 3 日雨量</h3>
+        <p class="hint">最近 3 天雨量會影響施肥後 N₂O 排放風險。不確定時可以先填大約值，之後在本季資料檢查時再補正。</p>
         <div class="input-row">
           <label for="rain-today">今天雨量</label>
           <input type="number" id="rain-today" min="0" step="1" value="0">
@@ -1116,7 +1131,7 @@
           </select>
         </div>
         <div class="page-tools">
-          <button class="btn primary" id="apply-check-btn">查看施肥建議</button>
+          <button class="btn primary" id="apply-check-btn">立即判斷</button>
           <button class="btn" id="apply-reuse-btn">沿用上次紀錄</button>
           <button class="btn" id="apply-reset-btn">重新填寫</button>
         </div>
@@ -1497,35 +1512,35 @@
   };
   var ROLE_CONFIG = {
     farm: {
-      title: "Farm｜茶農日常管理",
-      copy: "先判斷今天適不適合施肥，再把施肥事件、季度檢查與年度成果慢慢累積起來。這一版優先服務茶農的日常操作。",
+      title: "茶農｜先處理茶園管理",
+      copy: "我要記錄施肥、判斷雨後能不能施肥，並查看本季與今年的低碳成果。你可以從施肥判斷、施肥紀錄、採收登記與本季資料檢查開始。",
       actions: [
-        { label: "開始施肥判斷", page: "decision", intent: "plan", primary: true },
-        { label: "查看年度成果", page: "annual" }
+        { label: "進入茶園管理", page: "decision", intent: "plan", primary: true },
+        { label: "建立茶園資料", page: "farm" }
       ]
     },
     factory: {
-      title: "Factory｜加工與能源管理",
-      copy: "把採收批次、加工用電與燃料接起來，看每批茶菁變成乾茶時的碳排變化，適合茶廠或初製加工端。",
+      title: "茶廠｜登記這批茶的加工資料",
+      copy: "我要記錄這批茶加工用了多少電、多少燃料，以及最後做出多少乾茶。完成後，系統會幫你往包裝與產品碳足跡接下去。",
       actions: [
-        { label: "進入價值鏈端", file: "teacarbon_value_chain.html", hash: "chain", primary: true },
-        { label: "看產品碳足跡", file: "teacarbon_value_chain.html", hash: "footprint" }
+        { label: "進入加工紀錄", file: "teacarbon_value_chain.html", hash: "chain", primary: true },
+        { label: "查看這批茶碳排", file: "teacarbon_value_chain.html", hash: "footprint" }
       ]
     },
     product: {
-      title: "Product｜包裝、物流與商品碳足跡",
-      copy: "把包材、運輸、倉儲與產品批次接起來，從茶園一路走到商品端，適合品牌、通路與產品管理。",
+      title: "品牌端｜補齊包裝與運輸資料",
+      copy: "我要記錄包材、出貨、倉儲與運輸距離，計算每包茶或每公斤茶的碳排量。這裡會接續前面的採收與加工批次。",
       actions: [
-        { label: "打開產品碳足跡", file: "teacarbon_value_chain.html", hash: "footprint", primary: true },
-        { label: "查看價值鏈首頁", file: "teacarbon_value_chain.html", hash: "home" }
+        { label: "進入產品資料", file: "teacarbon_value_chain.html", hash: "chain", primary: true },
+        { label: "查看產品碳足跡", file: "teacarbon_value_chain.html", hash: "footprint" }
       ]
     },
     advisory: {
-      title: "Advisory｜輔導、盤查與 Bridge 匯出",
-      copy: "把事件資料、季度檢查、資料品質和價值鏈批次整理成 EX-ACT / EX-ACT VC 所需模板，方便輔導與盤查前置作業。",
+      title: "輔導員｜查看成果與匯出資料",
+      copy: "我要檢查資料是否完整，整理季度報表，並匯出 EX-ACT 或 EX-ACT VC 所需資料。一般使用者先完成日常記錄，輔導端再負責整理與抽查。",
       actions: [
-        { label: "打開 EX-ACT Bridge", file: "teacarbon_value_chain.html", hash: "bridge", primary: true },
-        { label: "查看研究模型", page: "research" }
+        { label: "進入成果報表", page: "annual", primary: true },
+        { label: "下載盤查模板", file: "teacarbon_value_chain.html", hash: "bridge" }
       ]
     }
   };
@@ -1544,7 +1559,17 @@
   }
 
   document.querySelectorAll(".nav-btn").forEach(function(btn) {
-    btn.addEventListener("click", function() { showPage(btn.dataset.page); });
+    btn.addEventListener("click", function() {
+      if (btn.dataset.page) {
+        showPage(btn.dataset.page);
+        return;
+      }
+      if (btn.dataset.openFile) {
+        var target = btn.dataset.openFile || "";
+        var hash = btn.dataset.openHash ? ("#" + btn.dataset.openHash) : "";
+        window.location.href = target + hash;
+      }
+    });
   });
   function showResearchPanel(panelName) {
     document.querySelectorAll(".tab").forEach(function(tab) {
@@ -1873,10 +1898,10 @@
     applyIntent = mode;
     document.getElementById("intent-plan-btn").classList.toggle("active", mode === "plan");
     document.getElementById("intent-record-btn").classList.toggle("active", mode === "record");
-    document.getElementById("decision-save-btn").textContent = mode === "plan" ? "儲存為施肥紀錄" : "已施肥，直接存檔";
+    document.getElementById("decision-save-btn").textContent = mode === "plan" ? "存成施肥紀錄" : "存成施肥紀錄";
     document.getElementById("decision-save-hint").textContent = mode === "plan"
-      ? "看完建議後，可選擇存成今天的施肥紀錄。"
-      : "這筆資料會直接加入年度成果統計。";
+      ? "看完建議後，如果這次要施肥，就把它存成施肥紀錄。"
+      : "這筆資料會直接加入本季檢查與年度成果統計。";
   }
   function calculateFertilizerN() {
     var product = document.getElementById("fertilizer-product").value;
